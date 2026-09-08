@@ -170,16 +170,24 @@ sincronizados con el estado real, sin errores de consola. Commiteado como
    presentada como artifact y confirmada por el usuario antes de tocar
    código. Sigue sin imágenes finales — es composición con CSS/SVG/canvas,
    no arte generado.
-2. ~~Mock 3D~~ (MP.md §21/§22) — **hecho, verificación visual pendiente**
+2. ~~Mock 3D~~ (MP.md §21/§22) — **hecho y verificado visualmente**
    (`91d9eac`). Los 3 momentos de §21 mockeados con CSS/SVG/canvas, sin
    Three.js: partículas organizándose (`aditmex`), cadena apareciendo en
    secuencia (`siguiente-nivel`), red de nodos con pulso (`michoacan`,
-   treatment nuevo `red`). `tsc`/`build` limpios, pero la extensión
-   Claude-in-Chrome no conectó esa sesión (2 intentos, Chrome sí corría) —
-   **antes de dar esto por bueno, ábrelo en navegador y confirma que las 3
-   animaciones se ven/sienten bien** (timing del organize ~1.4s, stagger
-   de la cadena, pulso de los hubs de la red). Si algo no cuadra, es
-   código nuevo sin probar visualmente, no un "ya aprobado".
+   treatment nuevo `red`). `tsc`/`build` limpios. Verificado 2026-09-07 con
+   `npm run dev` + extensión Claude-in-Chrome (ya reconectó tras el
+   bloqueo de sesiones previas): las 3 escenas cargan con el DOM correcto
+   (`get_page_text`), partículas de `aditmex` convergen dentro del radio
+   de clúster esperado (`clusterX/Y` de `SceneBackdrop.tsx`), cadena de
+   `siguiente-nivel` dibuja línea+5 nodos completos, red de `michoacan`
+   muestra 8 nodos/2 hubs con `node-pulse` (CSS infinito, no capturable
+   en screenshot estático pero confirmado en código). Consola limpia, sin
+   errores. **Nota de proceso**: al navegar con `repeat` de teclas rápido
+   (3 `ArrowRight` en una sola llamada), el contador `NN/14` avanzó antes
+   que el contenido visible por ~3s — es el mismo comportamiento ya
+   documentado en "Gotchas operativos" (`AnimatePresence mode="wait"`
+   encola exit/enter por cada paso), no un bug nuevo; se confirmó
+   esperando a que el DOM alcanzara el índice mostrado.
 3. **GATE DE APROBACIÓN HUMANA** (MP.md §0.9): al completar el prototipo
    con mocks, preséntalo y **detente**. No sigas con imágenes finales, 3D
    real, Tauri ni empaquetado sin que el usuario diga algo equivalente a

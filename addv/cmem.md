@@ -163,3 +163,22 @@ Verificado con `git fetch` a ambos remotes antes de eliminar `origin-ventas`: `a
 **Verificación — INCOMPLETA, anotado con honestidad**: `tsc --noEmit` y `npm run build` limpios. Se intentó abrir en navegador (puerto nuevo 5175, servidor detenido después por PID específico, no por `taskkill /IM`) pero **la extensión Claude-in-Chrome no conectó** (2 intentos, `tabs_context_mcp` devolvió "Browser extension is not connected" con Chrome corriendo). Se paró de reintentar según la regla de no más de 2-3 intentos, y se commiteó dejando explícito en el mensaje de commit, en `AGENTS.md` y aquí que el timing/aspecto real de las 3 animaciones (organize, stagger, pulso) **no se ha visto todavía** — el código está razonado pero no confirmado visualmente. No se afirmó una verificación que no ocurrió.
 
 **Pendiente**: abrir `/app` en navegador la próxima sesión y confirmar visualmente los 3 momentos antes de darlos por buenos. Después: gate de aprobación humana (MP.md §0.9) antes de Fase 3 — sigue sin iniciar.
+
+---
+
+## 2026-09-07 — Verificación visual de los mocks 3D (cierre del pendiente)
+
+**Pedido**: "continua donde te quedaste" → retomar el pendiente anotado arriba: verificar visualmente los 3 mocks 3D. En sesiones intermedias (registradas en el timeline de claude-mem, no repetidas aquí en detalle) la extensión Claude-in-Chrome falló 8 intentos consecutivos across 2 sesiones y se llegó a plantear escalar como bug report — no se llegó a filar, el usuario resolvió el bloqueo por su cuenta entre sesiones.
+
+**Verificado**: extensión Claude-in-Chrome conectó normalmente al reintentar (sin acción adicional de nuestro lado). Se levantó `npm run dev` (puerto 5173, log a scratchpad — el primer intento falló por permiso denegado escribiendo a `/tmp_devlog.txt`, corregido usando el scratchpad de la sesión). Navegación por teclado a las 3 escenas de MP.md §21:
+- `aditmex` (organize): partículas dentro del radio de clúster esperado (`clusterX=0.72·w`, `clusterY=0.42·w`, radio `0.16·min(w,h)` — verificado con zoom sobre la región y comparado contra las coordenadas de `SceneBackdrop.tsx`).
+- `siguiente-nivel` (stagger): línea completa + 5 nodos, secuencia terminada tras el tiempo de animación.
+- `michoacan` (red): 8 nodos / 2 hubs, aristas correctas; el pulso es CSS infinito, no capturable en un screenshot estático pero confirmado leyendo el keyframe `node-pulse` en el código.
+
+Consola sin errores en ningún momento. Se observó un desfase de ~3s entre el contador `NN/14` (11/14) y el contenido visible (seguía mostrando la escena 8) al mandar 3 `ArrowRight` casi simultáneos en una sola llamada de `computer` — se investigó antes de reportarlo como bug: es el mismo comportamiento ya documentado en `AGENTS.md` ("Gotchas operativos") de `AnimatePresence mode="wait"` encolando las transiciones de 700ms una por una; esperando más tiempo el DOM alcanzó el índice mostrado. No es una regresión nueva, es una consecuencia de probar con múltiples teclas en una sola llamada en vez de una por una con pausas.
+
+Servidor de desarrollo detenido por PID específico (`Stop-Process -Id`), no por `taskkill /IM`, siguiendo la lección de la sesión anterior.
+
+**Implementado**: `app/AGENTS.md` actualizado (mock 3D pasa de "hecho, verificación pendiente" a "hecho y verificado visualmente", con el detalle de qué se comprobó). `project_state.md` actualizado (mueve el ítem de "falta/pendiente" a "cerrado", agrega entrada nueva).
+
+**Pendiente**: **gate de aprobación humana (MP.md §0.9)** — sigue sin iniciarse Fase 3 (3D real con Three Fiber, imágenes finales, Tauri). No avanzar sin que el usuario diga algo equivalente a "aprobado"/"continúa"/"construye la versión final".
