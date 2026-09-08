@@ -92,3 +92,22 @@ body {
     scroll-behavior: auto !important;
   }
 }
+
+/* ============================================================
+   Mocks 3D (MP.md §21/§22) — momentos memorables via CSS/SVG,
+   sin Three.js todavía. La regla de prefers-reduced-motion de
+   arriba ya colapsa estas animaciones a instantáneas, no hace
+   falta condicionarlas por JS. Ver SceneBackdrop.tsx.
+   ============================================================ */
+@keyframes node-in {
+  from { opacity: 0; transform: scale(0.4); }
+  to { opacity: 1; transform: scale(1); }
+}
+@keyframes line-grow {
+  from { stroke-dashoffset: 600; }
+  to { stroke-dashoffset: 0; }
+}
+@keyframes node-pulse {
+  0%, 100% { opacity: 0.55; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.18); }
+}

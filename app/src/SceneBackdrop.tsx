@@ -9,7 +9,17 @@
 import { useEffect, useRef } from 'react'
 import type { Scene } from './scenes'
 
-function Particles({ reduceMotion }: { reduceMotion: boolean }) {
+/**
+ * `organize`: mock del 3D #1 de MP.md §21 ("partículas/materias primas que
+ * se organizan") — sin ambición de reemplazarlo, solo probar el ritmo:
+ * las partículas convergen en un clúster (~1.4s, ease-out) y luego
+ * respiran ahí con un jitter mínimo determinista (seno/coseno, sin
+ * acumular velocidad — no hay riesgo de que "se escapen" del clúster).
+ * Con `prefers-reduced-motion` arriba ya no hay animación de scroll/CSS,
+ * pero este canvas se anima por rAF/JS, así que si además `reduceMotion`
+ * viene true se salta directo al estado final organizado, sin bucle.
+ */
+function Particles({ reduceMotion, organize = false }: { reduceMotion: boolean; organize?: boolean }) {
   const ref = useRef<HTMLCanvasElement>(null)
 
   useEffect(() => {
@@ -28,22 +38,62 @@ function Particles({ reduceMotion }: { reduceMotion: boolean }) {
     }
     resize()
 
-    const N = 42
-    const points = Array.from({ length: N }, () => ({
-      x: Math.random() * canvas.clientWidth,
-      y: Math.random() * canvas.clientHeight,
-      r: 0.6 + Math.random() * 1.6,
-      a: 0.12 + Math.random() * 0.32,
-      vx: (Math.random() - 0.5) * 0.06,
-      vy: (Math.random() - 0.5) * 0.06,
-    }))
+    const w0 = canvas.clientWidth
+    const h0 = canvas.clientHeight
+    const clusterX = w0 * 0.72
+    const clusterY = h0 * 0.42
+    const clusterR = Math.min(w0, h0) * 0.16
+    const ORGANIZE_MS = 1400
+    const start = performance.now()
 
-    const draw = () => {
+    const N = 42
+    const points = Array.from({ length: N }, () => {
+      const angle = Math.random() * Math.PI * 2
+      const radius = clusterR * Math.sqrt(Math.random())
+      const targetX = clusterX + Math.cos(angle) * radius
+      const targetY = clusterY + Math.sin(angle) * radius
+      const scattered = organize && !reduceMotion
+      return {
+        x: scattered ? Math.random() * w0 : targetX,
+        y: scattered ? Math.random() * h0 : targetY,
+        ix: scattered ? undefined : targetX,
+        iy: scattered ? undefined : targetY,
+        targetX,
+        targetY,
+        r: 0.6 + Math.random() * 1.6,
+        a: 0.14 + Math.random() * 0.34,
+        vx: (Math.random() - 0.5) * 0.06,
+        vy: (Math.random() - 0.5) * 0.06,
+        phase: Math.random() * Math.PI * 2,
+      }
+    })
+    for (const p of points) {
+      if (p.ix === undefined) {
+        p.ix = p.x
+        p.iy = p.y
+      }
+    }
+
+    const easeOutCubic = (t: number) => 1 - Math.pow(1 - t, 3)
+
+    const draw = (now: number) => {
       const w = canvas.clientWidth
       const h = canvas.clientHeight
       ctx.clearRect(0, 0, w, h)
+      const elapsed = now - start
+
       for (const p of points) {
-        if (!reduceMotion) {
+        if (organize) {
+          if (elapsed < ORGANIZE_MS) {
+            const t = easeOutCubic(elapsed / ORGANIZE_MS)
+            p.x = p.ix! + (p.targetX - p.ix!) * t
+            p.y = p.iy! + (p.targetY - p.iy!) * t
+          } else {
+            const settle = now * 0.0006
+            p.x = p.targetX + Math.sin(settle + p.phase) * 2.4
+            p.y = p.targetY + Math.cos(settle * 1.3 + p.phase) * 2.4
+          }
+        } else if (!reduceMotion) {
           p.x += p.vx
           p.y += p.vy
           if (p.x < 0) p.x = w
@@ -58,10 +108,10 @@ function Particles({ reduceMotion }: { reduceMotion: boolean }) {
       }
       if (!reduceMotion) raf = requestAnimationFrame(draw)
     }
-    draw()
+    draw(start)
 
     return () => cancelAnimationFrame(raf)
-  }, [reduceMotion])
+  }, [reduceMotion, organize])
 
   return <canvas ref={ref} className="absolute inset-0 h-full w-full" />
 }
@@ -81,7 +131,14 @@ function Vignette({ strength }: { strength: 'soft' | 'strong' }) {
   )
 }
 
-function ChainLines() {
+/**
+ * `stagger`: mock del 3D #2 de MP.md §21 ("cadena de transformación:
+ * materia prima → ingrediente → producto") — reservado para la escena
+ * cuyo texto ya narra exactamente esa cadena (`siguiente-nivel`). El
+ * resto de escenas `cadena` (oportunidad, qué-hacemos) quedan igual que
+ * antes, sin animación, para no sobre-usar el efecto.
+ */
+function ChainLines({ stagger = false }: { stagger?: boolean }) {
   const nodes = [
     { x: 60, y: 300 },
     { x: 190, y: 245 },
@@ -102,6 +159,11 @@ function ChainLines() {
         y2={nodes[nodes.length - 1].y}
         stroke="rgba(196,172,77,.35)"
         strokeWidth={1.5}
+        style={
+          stagger
+            ? { strokeDasharray: 600, animation: 'line-grow 1.1s ease forwards' }
+            : undefined
+        }
       />
       {nodes.map((n, i) => (
         <circle
@@ -110,6 +172,75 @@ function ChainLines() {
           cy={n.y}
           r={i === 0 || i === nodes.length - 1 ? 5.5 : 4.5}
           fill={i === 0 || i === nodes.length - 1 ? '#C4AC4D' : 'rgba(196,172,77,.65)'}
+          style={
+            stagger
+              ? { opacity: 0, transformOrigin: `${n.x}px ${n.y}px`, animation: `node-in .5s ease forwards`, animationDelay: `${i * 180}ms` }
+              : undefined
+          }
+        />
+      ))}
+    </svg>
+  )
+}
+
+/**
+ * `red`: mock del 3D #3 de MP.md §21 ("red de conexión entre productores,
+ * ingredientes, procesos y mercado") — grafo, no cadena lineal: sin punto
+ * de inicio/fin marcado, 2 nodos "hub" con pulso sutil (respeta
+ * prefers-reduced-motion vía la regla global de index.css).
+ */
+function NetworkGraph() {
+  const nodes = [
+    { x: 380, y: 60, hub: false },
+    { x: 480, y: 40, hub: true },
+    { x: 560, y: 110, hub: false },
+    { x: 600, y: 220, hub: false },
+    { x: 520, y: 290, hub: true },
+    { x: 430, y: 250, hub: false },
+    { x: 460, y: 150, hub: false },
+    { x: 340, y: 180, hub: false },
+  ]
+  const edges: [number, number][] = [
+    [0, 1],
+    [1, 2],
+    [2, 3],
+    [3, 4],
+    [4, 5],
+    [5, 6],
+    [6, 0],
+    [6, 7],
+    [7, 5],
+    [1, 6],
+  ]
+  return (
+    <svg
+      className="absolute inset-0 h-full w-full opacity-80"
+      viewBox="0 0 640 360"
+      preserveAspectRatio="xMidYMid slice"
+    >
+      {edges.map(([a, b], i) => (
+        <line
+          key={i}
+          x1={nodes[a].x}
+          y1={nodes[a].y}
+          x2={nodes[b].x}
+          y2={nodes[b].y}
+          stroke="rgba(196,172,77,.22)"
+          strokeWidth={1}
+        />
+      ))}
+      {nodes.map((n, i) => (
+        <circle
+          key={i}
+          cx={n.x}
+          cy={n.y}
+          r={n.hub ? 5.5 : 3.5}
+          fill={n.hub ? '#C4AC4D' : 'rgba(196,172,77,.6)'}
+          style={
+            n.hub
+              ? { transformOrigin: `${n.x}px ${n.y}px`, animation: `node-pulse ${2.4 + i * 0.3}s ease-in-out infinite` }
+              : undefined
+          }
         />
       ))}
     </svg>
@@ -128,22 +259,30 @@ function GuideLines() {
 export function SceneBackdrop({
   treatment,
   reduceMotion,
+  sceneId,
 }: {
   treatment: Scene['treatment']
   reduceMotion: boolean
+  sceneId: string
 }) {
   return (
     <div className="absolute inset-0 z-0 overflow-hidden">
       {treatment === 'retrato' && (
         <>
           <Vignette strength="strong" />
-          <Particles reduceMotion={reduceMotion} />
+          <Particles reduceMotion={reduceMotion} organize={sceneId === 'aditmex'} />
         </>
       )}
       {treatment === 'cadena' && (
         <>
           <Vignette strength="soft" />
-          <ChainLines />
+          <ChainLines stagger={sceneId === 'siguiente-nivel'} />
+        </>
+      )}
+      {treatment === 'red' && (
+        <>
+          <Vignette strength="soft" />
+          <NetworkGraph />
         </>
       )}
       {treatment === 'lista' && (

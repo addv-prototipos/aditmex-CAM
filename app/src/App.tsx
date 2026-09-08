@@ -39,7 +39,7 @@ function App() {
           transition={{ duration: reduceMotion ? 0.01 : 0.7, ease: [0.22, 0.68, 0, 1] }}
           className="relative flex h-full w-full flex-col items-start justify-center gap-6 overflow-hidden px-10 md:px-24"
         >
-          <SceneBackdrop treatment={scene.treatment} reduceMotion={Boolean(reduceMotion)} />
+          <SceneBackdrop treatment={scene.treatment} reduceMotion={Boolean(reduceMotion)} sceneId={scene.id} />
 
           <span className="relative z-10 font-body text-xs uppercase tracking-[0.14em] text-gold-light">
             {scene.eyebrow}

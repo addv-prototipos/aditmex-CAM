@@ -5,12 +5,18 @@
  * investigación" (MP.md §0.12) y "seguridad de marca" (MP.md §37).
  *
  * `treatment` = sistema visual de fondo (propuesta con antes/después
- * confirmada por el usuario, 2026-09-07 — ver SceneBackdrop.tsx). 3
+ * confirmada por el usuario, 2026-09-07 — ver SceneBackdrop.tsx). 4
  * familias reutilizables, no 14 diseños bespoke:
- *   - retrato: viñeta + partículas doradas — apertura, cierre, y los dos
- *     momentos de mayor peso narrativo (quién es ADITMEX, Michoacán).
+ *   - retrato: viñeta + partículas doradas — apertura, cierre, y el
+ *     momento "quién es ADITMEX". En `aditmex` las partículas además
+ *     convergen en un clúster al entrar (mock 3D #1 de MP.md §21,
+ *     "partículas que se organizan").
  *   - cadena: línea/nodos SVG — las 3 escenas cuyo título YA es una
- *     cadena con flechas (oportunidad, qué-hacemos, siguiente-nivel).
+ *     cadena con flechas (oportunidad, qué-hacemos, siguiente-nivel). En
+ *     `siguiente-nivel` la línea y los nodos aparecen en secuencia (mock
+ *     3D #2, "cadena de transformación").
+ *   - red: grafo SVG con nodos conectados, sin inicio/fin marcado —
+ *     `michoacan` (mock 3D #3, "red productores-ingredientes-mercado").
  *   - lista: guías horizontales sutiles — la única escena con contenido
  *     realmente enumerado (confianza, "01…05").
  *   - base: viñeta sutil sin elemento adicional — el resto, para que no
@@ -25,7 +31,7 @@
  */
 import type { ReactNode } from 'react'
 
-export type Treatment = 'retrato' | 'cadena' | 'lista' | 'base'
+export type Treatment = 'retrato' | 'cadena' | 'lista' | 'red' | 'base'
 
 export type Scene = {
   id: string
@@ -121,7 +127,7 @@ export const scenes: Scene[] = [
     eyebrow: 'Michoacán',
     title:
       'Queremos que las empresas agroalimentarias de Michoacán tengan cerca un aliado para resolver lo que necesitan para crecer.',
-    treatment: 'retrato',
+    treatment: 'red',
   },
   {
     id: 'vision',
