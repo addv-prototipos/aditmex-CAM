@@ -17,7 +17,7 @@ Reunión con el Consejo es **hoy** (2026-09-08). Nada bloqueante pendiente: siti
 
 ## Falta / pendiente
 
-- **Docker**: protocolo exige contenedorización — pendiente (nginx estático para `index.html` + `app/dist`).
+- **Docker**: hecho para `/app` — `app/Dockerfile` (multi-stage: `node:20-alpine` build + `nginx:1.27-alpine` serve), `app/nginx.conf` (cache largo en assets/imágenes, `index.html` sin cache), `docker-compose.yml` en la raíz (`docker compose up -d --build`, puerto 8080). Probado: `curl localhost:8080/` 200, imagen 200, título correcto. El sitio estático raíz (`index.html`) sigue sin contenedorizar — no se pidió, es un proyecto separado.
 - **Tauri 2** (`.exe`/`.msi`): bloqueado por falta de Rust/Cargo — pedir confirmación antes de instalar (cambio de sistema).
 - **Logo vector real** (ID-01): placeholder `assets/brand/aditmex-logo-refined.png` (raster) hasta vectorizar `aditmex-logo-white.svg`.
 - **`.idea/`**: ya en `.gitignore`, no trackear (JetBrains local).

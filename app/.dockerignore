@@ -1,0 +1,9 @@
+node_modules
+dist
+dist-ssr
+test-results
+playwright-report
+src-tauri/target
+src-tauri/Cargo.lock
+.git
+*.log
