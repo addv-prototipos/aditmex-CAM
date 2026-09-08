@@ -127,6 +127,37 @@ function Particles({ reduceMotion, organize = false }: { reduceMotion: boolean; 
   return <canvas ref={ref} className="absolute inset-0 h-full w-full" />
 }
 
+/**
+ * Foto final de Docs/images_prompt.md (Fase 3, integrada 2026-09-07).
+ * Solo en escenas sin 3D real (ver nota en scenes.tsx) — object-cover a
+ * pantalla completa, primer plano oscurecido con `PhotoScrim` para que el
+ * texto (izquierda) tenga contraste garantizado sin depender del
+ * contenido de la foto. `eager` únicamente en `portada` (LCP).
+ */
+function SceneImage({ src, eager }: { src: string; eager?: boolean }) {
+  return (
+    <img
+      src={src}
+      alt=""
+      className="absolute inset-0 h-full w-full object-cover"
+      loading={eager ? 'eager' : 'lazy'}
+      decoding="async"
+    />
+  )
+}
+
+function PhotoScrim() {
+  return (
+    <div
+      className="absolute inset-0"
+      style={{
+        background:
+          'linear-gradient(100deg, rgba(26,26,46,.88) 0%, rgba(26,26,46,.62) 42%, rgba(26,26,46,.28) 75%, rgba(26,26,46,.32) 100%)',
+      }}
+    />
+  )
+}
+
 function Vignette({ strength }: { strength: 'soft' | 'strong' }) {
   const opacity = strength === 'strong' ? 1 : 0.55
   return (
@@ -290,10 +321,12 @@ export function SceneBackdrop({
   treatment,
   reduceMotion,
   sceneId,
+  image,
 }: {
   treatment: Scene['treatment']
   reduceMotion: boolean
   sceneId: string
+  image?: string
 }) {
   // El canvas 3D persistente de App.tsx ya se ve por detrás — solo hace
   // falta no dibujar el mock 2D encima cuando aplica.
@@ -301,6 +334,12 @@ export function SceneBackdrop({
 
   return (
     <div className="absolute inset-0 z-0 overflow-hidden">
+      {image && (
+        <>
+          <SceneImage src={image} eager={sceneId === 'portada'} />
+          <PhotoScrim />
+        </>
+      )}
       <Vignette strength={treatment === 'retrato' ? 'strong' : 'soft'} />
       {!rendersOnGlobalCanvas && <Legacy2DContent treatment={treatment} reduceMotion={reduceMotion} sceneId={sceneId} />}
     </div>

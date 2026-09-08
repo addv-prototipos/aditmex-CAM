@@ -8,10 +8,36 @@ código.
 **Nota de origen**: este proyecto lo empezó Claude Code (Claude Sonnet 5) el
 2026-09-07 siguiendo el flujo de la skill `addv-web-app` (ver `../CLAUDE.md`
 en la raíz del repo) y el prompt maestro `../Docs/MP.md`. Estado al
-2026-09-07 (cierre de sesión): **Fase 2 completa (14/14 escenas)**, gate de
-MP.md §0.9 **aprobado**, **Fase 3 en curso** — 3D real ya hecho y
-verificado, imágenes finales en proceso (el usuario las genera aparte),
-Tauri sin empezar (falta Rust). Ver "Qué sigue" para el detalle exacto.
+2026-09-07 (cierre de sesión, pausada a media tarea por el usuario — ver
+recuadro abajo): **Fase 2 completa**, gate de MP.md §0.9 **aprobado**, 3D
+real hecho y verificado, imágenes finales recibidas/corregidas e
+**integradas en código pero SIN COMMITEAR** (`git status` marcará
+`app/src/{App,SceneBackdrop,scenes}.tsx` como modified — es intencional,
+no lo pierdas ni lo reviertas). Tauri sin empezar (falta Rust).
+
+> ⚠️ **ARRANCA AQUÍ — tarea inconclusa, no un checkpoint limpio**
+>
+> La sesión anterior integró imágenes en 11/14 escenas y, verificando en
+> navegador, encontró una **lentitud/posible cuelgue real** al navegar
+> entre escenas con foto (una transición tardó ~7s en vez de <1s; otra
+> prueba con un script JS hizo que Chrome reportara "renderer may be
+> frozen or unresponsive" tras 45s). El usuario dijo "pausa" antes de
+> diagnosticarlo a fondo — **no se llegó a una causa raíz confirmada, ni
+> se commiteó nada de esto**. Tu primer trabajo, en este orden:
+> 1. Lee el punto 5 de "Qué sigue" completo antes de tocar nada.
+> 2. Reproduce el problema tú mismo (pasos ahí) para confirmar que sigue
+>    ocurriendo — no asumas que ya está diagnosticado.
+> 3. Encuentra la causa raíz (candidatos ya descartados/sospechados están
+>    listados) y arréglala.
+> 4. Vuelve a verificar las 11 escenas con foto + las 3 con 3D real, con
+>    el mismo rigor de sesiones anteriores (DOM real, no solo screenshot
+>    — ver "Gotchas operativos").
+> 5. Solo entonces: commitea, actualiza este archivo y `project_state.md`/
+>    `addv/cmem.md` marcando el punto 5 como cerrado de verdad.
+>
+> No hay gate de aprobación pendiente aquí — el usuario ya aprobó
+> integrar las imágenes, esto es cerrar un bug antes de dar el trabajo
+> por bueno, no pedir permiso de nuevo.
 
 Si continúas con otro modelo (el dueño del proyecto mencionó "OpenCode con
 muse spark v1.2" — no es un modelo que yo reconozca en mi conocimiento, así
@@ -211,29 +237,85 @@ sincronizados con el estado real, sin errores de consola. Commiteado como
      prop `active` (`'always'` solo en las 3 escenas, `'demand'` el resto).
    - Verificado: 5 ciclos de navegación real (5→11→8→5→11→8→5→11→…) sin un
      solo "Context Lost" ni error en consola tras el fix.
-5. ~~Imágenes finales~~ (`Docs/images_prompt.md`) — **recibidas y
-   corregidas 2026-09-07**, faltaba integrarlas en código:
-   - 12 narrativas + textura de marca (ID-02) en `app/public/images/`
-     (`brand/` para la textura). El usuario las entregó como PNG
-     renombrado a `.webp` (magic bytes `89 50 4E 47`, no `RIFF...WEBP`) —
-     se convirtieron a WebP real con Pillow (25.5MB → 3.1MB) y se movieron
-     desde `public/images/` (carpeta suelta en la raíz, sin dueño) a
-     `app/public/images/` (la que sirve Vite). Dimensiones reales algo
-     menores al spec pero mismo aspect ratio (ej. `hero-*` 1672×941 vs
-     2400×1350 pedido) — no se hizo upscale, no vale la pena degradar
-     calidad por eso.
-   - Logo (ID-01, `aditmex-logo-refined.svg`): mismo problema de formato
-     **más** un problema de fondo — pedía re-vectorizar
+5. Imágenes finales (`Docs/images_prompt.md`) — **recibidas, corregidas e
+   integradas en código, pero sin verificar del todo ni commitear — ver
+   recuadro de arriba**.
+   - **Recepción/corrección** (esta parte SÍ está cerrada y ya commiteada,
+     commit con las 13 fotos): 12 narrativas + textura de marca (ID-02) en
+     `app/public/images/` (`brand/` para la textura). El usuario las
+     entregó como PNG renombrado a `.webp`/`.svg` (magic bytes `89 50 4E
+     47`, no `RIFF...WEBP` ni `<svg`) — se convirtieron a WebP/PNG real
+     con Pillow (25.5MB → 3.1MB en las narrativas) y se movieron desde
+     `public/images/` (carpeta suelta en la raíz, sin dueño) a
+     `app/public/images/` (la que sirve Vite). Logo (ID-01) resultó ser el
+     mismo problema **más** uno de fondo: pedía re-vectorizar
      `aditmex-logo-white.svg` (no existe en el repo) y ningún generador de
-     imágenes produce vector real de todos modos. Con el usuario: se guardó
-     como placeholder raster honesto en `assets/brand/aditmex-logo-refined.png`
-     (sin extensión `.svg` falsa) hasta que exista un vector real —
-     **no usar este PNG como si fuera el logo final**, avisar si se integra.
-   - **Falta todavía**: conectar estas imágenes en `scenes.tsx`/
-     `SceneBackdrop.tsx` (ahora mismo el sitio sigue usando gradientes/CSS/
-     3D, ninguna escena referencia `app/public/images/*` aún) — próximo
-     paso pendiente de que el usuario confirme cómo quiere integrarlas
-     (¿reemplazan el treatment de fondo? ¿son media adicional por escena?).
+     imágenes produce vector real — con el usuario: se guardó como
+     placeholder raster honesto en `assets/brand/aditmex-logo-refined.png`
+     (sin extensión `.svg` falsa), **no es el logo final, no lo trates
+     como tal**.
+   - **Integración en escenas** (esta parte es la que quedó a medias, SIN
+     COMMITEAR — archivos modificados: `scenes.tsx`, `SceneBackdrop.tsx`,
+     `App.tsx`). Decisión de diseño tomada y ya implementada: **las 3
+     escenas con 3D real (`aditmex`/`siguiente-nivel`/`michoacan`) NO
+     llevan foto** — su 3D vive en un `<Canvas>` global pintado detrás de
+     toda la sección (ver punto 4), una foto ahí lo taparía por completo,
+     son capas que no pueden convivir tal como está construido. Las otras
+     11 escenas sí llevan foto de fondo (mapeo por afinidad de contenido,
+     no por el "orden recomendado" de `images_prompt.md`, que asume 12
+     escenas y aquí hay 14):
+     `portada`→hero-agroindustria-michoacan · `contexto`→michoacan-value-chain
+     · `oportunidad`→transformed-food-products · `problema`→mexican-food-entrepreneur
+     · `qué-hacemos`→ingredient-supply · `portafolio`→food-ingredients-premium
+     · `confianza`→food-quality-standardization · `servicio`→food-business-consultation
+     · `vision`→michoacan-agroindustry · `cierre`→ingredient-particles-abstract
+     · `cta-final`→product-development-food.
+   - **Implementación**: `Scene['image']` (nuevo campo opcional en
+     `scenes.tsx`) con la ruta pública (`/images/<archivo>.webp`).
+     `SceneBackdrop.tsx` gana `SceneImage` (un `<img object-cover>`, sin
+     `alt` porque es decorativa, `loading="eager"` solo en `portada` para
+     LCP) + `PhotoScrim` (gradiente lineal izquierda→derecha, más oscuro
+     donde vive el texto) — se renderizan ANTES del `Vignette` existente
+     cuando la escena trae `image`, dejando el resto de capas (2D/3D)
+     intactas encima.
+   - ⚠️ **PROBLEMA SIN RESOLVER — lentitud/cuelgue real al navegar**: al
+     probar en navegador (server `npm run dev`, extensión Claude-in-Chrome)
+     se observó que algunas transiciones entre escenas con foto tardan
+     mucho más de lo esperado. Repro: desde una escena sin 3D, hacer clic
+     en un botón de navegación (dots inferiores, `aria-label="Ir a escena
+     N: ..."`) que salte a otra escena con foto, y medir cuánto tarda en
+     que el DOM real (`eyebrow`, `<img src>`) cambie — normal debería ser
+     <1s (la transición de Framer Motion es de 700ms). Se vio una vez 7s,
+     y una vez un script de verificación (`dots[3].click()` + polling)
+     hizo que Chrome devolviera `"Runtime.evaluate timed out after 45000ms
+     ... renderer may be frozen or unresponsive"`. **No se aisló la causa
+     antes de pausar** — candidatos sin descartar, en orden de sospecha:
+     1. Decodificación de imágenes WebP pesadas (200-400KB, hasta
+        2200×1400px) en el hilo principal al montar cada `<img>`, sumado
+        al canvas 2D de `Particles`/otros mocks y al `<Canvas>` de R3F ya
+        persistente — posible saturación de CPU/GPU en escenas con varias
+        cosas animando a la vez.
+     2. Algo específico de mandar el click vía `element.click()` desde un
+        script (`javascript_tool`) en vez de un click real de usuario —
+        antes de sospechar del código de la app, reproduce el problema
+        con clicks reales (`computer` tool, no JS) para descartar que sea
+        un artefacto de la herramienta de prueba.
+     3. Interacción entre el `<Canvas>` persistente de `Scene3D` (montado
+        globalmente en `App.tsx` desde que se visita la primera escena 3D)
+        y el nuevo `<img>` — aunque en teoría son capas independientes,
+        no se descartó que el navegador esté recalculando layout/paint de
+        forma cara al tener ambos en el árbol simultáneamente.
+     4. **Ojo con el propio proceso de prueba**: en esta sesión, llamar
+        `navigate()` al mismo URL exacto (`http://localhost:5173/`) dos
+        veces seguidas **no garantiza una recarga real** — el estado de
+        React (incluyendo `index` de la escena activa) puede sobrevivir,
+        dando falsos positivos de "está atorado" cuando en realidad es
+        estado viejo de una navegación anterior. Para forzar recarga real,
+        usa un query string distinto cada vez (`?t=<timestamp>`) o cierra
+        y crea una pestaña nueva — ver "Gotchas operativos".
+   - **No commitear estos 3 archivos hasta confirmar que el problema real
+     (si lo hay, después de descartar el punto 2 de arriba) está resuelto
+     y las 14 escenas se ven/navegan bien de punta a punta.**
 6. Tauri 2 (`.exe`/`.msi`) sigue sin empezar — **Rust/Cargo no está
    instalado en esta máquina**, pedir confirmación explícita antes de
    instalarlo (cambio de sistema). QA (MP.md §39 Fase 4) sin definir
@@ -272,6 +354,19 @@ Antes de cualquier `git push`, corre `git remote -v` y confirma que el
 - Lee el DOM real (texto/atributos) para verificar estado, no solo
   screenshots — un JPEG comprimido o un frame a mitad de animación puede
   hacer parecer un bug algo que no lo es.
+- **`navigate()` (Claude-in-Chrome) al mismo URL exacto no garantiza una
+  recarga real de JS** — si necesitas un estado 100% limpio para probar
+  algo (ej. confirmar si un `useState` arranca en su valor inicial),
+  agrega un query string distinto cada vez (`?t=<timestamp>`) o usa una
+  pestaña nueva. En esta sesión, reusar la misma URL dejó `index`/`needs3D`
+  de React con el valor de la navegación anterior, generando falsos
+  positivos de "la escena no cambia" que en realidad eran estado viejo.
+- Si un script de verificación (`javascript_tool`) tarda mucho o Chrome
+  responde `"renderer may be frozen or unresponsive"`, no asumas todavía
+  que es un bug de la app — reproduce lo mismo con un click real
+  (`computer` tool) antes de perseguir el bug en el código; el propio
+  mecanismo de disparar el evento por script puede comportarse distinto
+  a una interacción real del usuario.
 
 ## Comandos
 

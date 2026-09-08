@@ -225,3 +225,35 @@ Al revisar también los 2 assets de marca (ID-01/ID-02) se encontraron en `asset
 - Documentado en `app/AGENTS.md` (sección "Qué sigue", ítem 5) y `project_state.md` — incluye advertencia explícita de no tratar el PNG del logo como si fuera el vector final.
 
 **Pendiente**: integrar las imágenes en `scenes.tsx`/`SceneBackdrop.tsx` — todavía ninguna escena referencia `app/public/images/*`, el sitio sigue mostrando solo gradientes/CSS/3D. Falta que el usuario confirme cómo las quiere integrar (¿reemplazan el fondo por escena? ¿van aparte?) antes de tocar código — no asumir. Vector real del logo sigue sin existir.
+
+---
+
+## 2026-09-07 — Actualización manual del logo por el usuario (fuera de mi turno)
+
+**Contexto**: mientras documentaba el segmento anterior, el usuario avisó "acabo de actualizar el archivo llamado aditmex-logo-refined.svg" — había reemplazado el archivo con otro intento de generación.
+
+**Verificado**: seguía siendo PNG (magic bytes), no SVG real — mismo problema de fondo (ningún generador de imágenes produce vector), pero esta vez con una mejora real: 2157×729 con canal alfa (transparencia real, RGBA), contra el intento anterior que era RGB sin transparencia. Convertido a `assets/brand/aditmex-logo-refined.png` (395KB, con alfa), reemplazando el placeholder anterior. Sigue siendo raster, sigue sin ser el logo final.
+
+---
+
+## 2026-09-07 — Integración de imágenes en escenas: pausada a medio verificar, bug sin resolver
+
+**Pedido**: "integra las imágenes en las escenas" (tras commitear el segmento de recepción/corrección de imágenes).
+
+**Analizado y decidido antes de tocar código**: las 3 escenas con 3D real (`aditmex`/`siguiente-nivel`/`michoacan`) no pueden llevar foto de fondo — su `<Canvas>` vive en `App.tsx`, pintado DETRÁS de toda la sección de la escena (decisión de la sesión de 3D real, para evitar agotar contextos WebGL); una foto dentro de `SceneBackdrop` (que vive DENTRO de la sección) la taparía por completo, son capas que no pueden convivir tal como está construido el árbol de componentes. Se decidió entonces: esas 3 escenas se quedan puras (sin foto), y las 11 restantes se reparten las 11 imágenes narrativas únicas disponibles — coincidencia exacta de conteo. Mapeo hecho por afinidad de contenido real (releyendo cada prompt de `images_prompt.md` contra el texto real de cada escena), no por el "orden recomendado" del propio archivo (ese orden asume 12 escenas, aquí hay 14). No se le presentó tabla de mapeo al usuario antes de implementar — se explicó en el chat y se implementó directo, dado que la instrucción ("integra las imágenes") era específica y de bajo riesgo (reversible, no toca copy ni paleta).
+
+**Implementado**:
+- `scenes.tsx`: campo `image?: string` nuevo en el tipo `Scene`, poblado en 11 escenas con rutas `/images/<archivo>.webp`.
+- `SceneBackdrop.tsx`: `SceneImage` (`<img object-cover>`, eager solo en `portada`) + `PhotoScrim` (velo lineal izquierda→derecha para contraste del texto), renderizados antes del `Vignette` existente cuando la escena trae `image`.
+- `App.tsx`: pasa `scene.image` a `SceneBackdrop`.
+- `tsc --noEmit` y `npm run build` limpios en cada paso.
+
+**Verificación en navegador — encontró un problema real, NO resuelto**:
+- `portada` y `contexto` se vieron perfectas en las primeras pruebas (foto + texto + contraste correctos).
+- Al probar `confianza` (salto de escena no adyacente vía los dots de navegación) se observó el contenido "atorado" en la escena anterior con el contador ya adelantado — al principio se interpretó como el mismo efecto ya conocido de `AnimatePresence mode="wait"` (encola transiciones), pero esta vez tardó genuinamente más de lo normal: una vez 7 segundos, y en otra prueba (usando `javascript_tool` para hacer `dots[3].click()` + un loop de polling) Chrome devolvió un timeout de 45s con "the renderer may be frozen or unresponsive".
+- Se investigó parcialmente: se descartó que fuera el artefacto ya conocido de `navigate()` al mismo URL no recargando de verdad (se confirmó forzando recarga real con `?t=<timestamp>` — el problema de lentitud persistió incluso con estado 100% limpio). **No se llegó a una causa raíz** antes de que el usuario dijera "pausa".
+- Candidatos sin descartar (documentados en `app/AGENTS.md` punto 5 para quien continúe): decodificación de imágenes pesadas en el hilo principal compitiendo con los canvas 2D/3D ya activos; el propio mecanismo de disparar el click vía script en vez de un click real de usuario (probar primero con `computer` tool antes de sospechar del código); interacción entre el `<Canvas>` persistente de R3F y las imágenes nuevas en el árbol de render.
+
+**Estado al pausar**: `app/src/App.tsx`, `app/src/SceneBackdrop.tsx`, `app/src/scenes.tsx` modificados y **sin commitear** — a propósito, no se quiere dar por bueno un trabajo con un bug de rendimiento real sin resolver. Server de dev (`npm run dev`, puerto 5173) y pestaña de Chrome se quedaron abiertos.
+
+**Pendiente para quien continúe** (documentado en detalle en `app/AGENTS.md`, sección "ARRANCA AQUÍ" y punto 5 de "Qué sigue"): reproducir el problema con clicks reales (no script), aislar la causa, arreglarla, re-verificar las 14 escenas de punta a punta, y solo entonces commitear.

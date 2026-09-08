@@ -25,9 +25,18 @@
  * `steps` (solo escena `confianza`): mismos 5 pasos que antes vivían como
  * una sola línea de texto ("01 Escuchamos · 02 …"), ahora estructurados
  * para renderizarse como badges — mismas palabras, sin texto nuevo.
- * Falta: mock 3D, imágenes finales — ver AGENTS.md → "Qué sigue". El gate
- * de aprobación (MP.md §0.9) sigue pendiente antes de Fase 3 (3D real,
- * imágenes finales, Tauri).
+ *
+ * `image` (Fase 3, imágenes finales de Docs/images_prompt.md, integradas
+ * 2026-09-07): foto de fondo real en las 11 escenas SIN 3D real. Decisión
+ * de diseño: `aditmex`/`siguiente-nivel`/`michoacan` se quedan sin foto a
+ * propósito — su fondo 3D vive en un <Canvas> global (App.tsx) pintado
+ * DETRÁS de toda la sección de la escena; una foto de fondo ahí taparía
+ * el 3D por completo (son capas separadas, no se puede alternar "encima").
+ * El mapeo foto↔escena es por afinidad de contenido, no por el orden
+ * recomendado de images_prompt.md (ese orden asume 12 escenas, aquí hay
+ * 14 y 3 quedan reservadas para 3D) — ver SceneBackdrop.tsx para cómo se
+ * renderiza (foto + velo de contraste, luego el resto de las capas igual
+ * que antes).
  */
 import type { ReactNode } from 'react'
 
@@ -40,6 +49,7 @@ export type Scene = {
   body?: string
   treatment: Treatment
   steps?: string[]
+  image?: string
 }
 
 export const scenes: Scene[] = [
@@ -48,6 +58,7 @@ export const scenes: Scene[] = [
     eyebrow: 'ADITMEX',
     title: 'Materias primas que abren posibilidades.',
     treatment: 'retrato',
+    image: '/images/hero-agroindustria-michoacan.webp',
   },
   {
     id: 'contexto',
@@ -55,6 +66,7 @@ export const scenes: Scene[] = [
     title: 'Michoacán produce.',
     body: 'El valor no termina en la cosecha.',
     treatment: 'base',
+    image: '/images/michoacan-value-chain.webp',
   },
   {
     id: 'oportunidad',
@@ -66,6 +78,7 @@ export const scenes: Scene[] = [
       </>
     ),
     treatment: 'cadena',
+    image: '/images/transformed-food-products.webp',
   },
   {
     id: 'problema',
@@ -73,6 +86,7 @@ export const scenes: Scene[] = [
     title: 'A veces, crecer no requiere una idea nueva.',
     body: 'Requiere encontrar la solución correcta.',
     treatment: 'base',
+    image: '/images/mexican-food-entrepreneur.webp',
   },
   {
     id: 'aditmex',
@@ -90,6 +104,7 @@ export const scenes: Scene[] = [
       </>
     ),
     treatment: 'cadena',
+    image: '/images/ingredient-supply.webp',
   },
   {
     id: 'portafolio',
@@ -97,6 +112,7 @@ export const scenes: Scene[] = [
     title:
       'No empezamos preguntando qué producto quieres comprar. Empezamos preguntando qué necesitas resolver.',
     treatment: 'base',
+    image: '/images/food-ingredients-premium.webp',
   },
   {
     id: 'siguiente-nivel',
@@ -115,12 +131,14 @@ export const scenes: Scene[] = [
     title: 'El ADITMEX Standard',
     steps: ['Escuchamos', 'Entendemos', 'Buscamos', 'Proponemos', 'Damos seguimiento'],
     treatment: 'lista',
+    image: '/images/food-quality-standardization.webp',
   },
   {
     id: 'servicio',
     eyebrow: 'Servicio',
     title: 'Así trabajamos.',
     treatment: 'base',
+    image: '/images/food-business-consultation.webp',
   },
   {
     id: 'michoacan',
@@ -134,6 +152,7 @@ export const scenes: Scene[] = [
     eyebrow: 'Visión',
     title: 'Una nueva etapa de crecimiento necesita proveedores que piensen contigo.',
     treatment: 'base',
+    image: '/images/michoacan-agroindustry.webp',
   },
   {
     id: 'cierre',
@@ -141,6 +160,7 @@ export const scenes: Scene[] = [
     title: 'Una buena idea merece algo más que una materia prima.',
     body: 'Merece respaldo. ADITMEX.',
     treatment: 'retrato',
+    image: '/images/ingredient-particles-abstract.webp',
   },
   {
     id: 'cta-final',
@@ -148,5 +168,6 @@ export const scenes: Scene[] = [
     title: 'Quien conoce lo que necesita para avanzar, deja de depender del azar.',
     body: 'ADITMEX — El respaldo detrás de lo que quieres desarrollar.',
     treatment: 'retrato',
+    image: '/images/product-development-food.webp',
   },
 ]

@@ -14,7 +14,7 @@ Estado del proyecto `adtmex_ventas` bajo el protocolo `addv-web-app`. Última ac
 
 ## En progreso
 
-Fase 3 de `/app` (MP.md, gate §0.9 ya aprobado 2026-09-07): 3D real hecho y verificado. Imágenes finales recibidas y corregidas (ver "Cerrado") — pendiente integrarlas en `scenes.tsx`/`SceneBackdrop.tsx`. Logo real (vector) sigue pendiente, hay placeholder raster. Tauri sin empezar — falta decidir si instalar Rust/Cargo en esta máquina (no está instalado).
+**Tarea inconclusa, pausada a media verificación por el usuario (2026-09-07) — ver `app/AGENTS.md` (recuadro "ARRANCA AQUÍ") antes de tocar nada.** Fase 3 de `/app` (MP.md, gate §0.9 ya aprobado): 3D real hecho y verificado. Imágenes finales recibidas, corregidas y **ya integradas en código** (`scenes.tsx`/`SceneBackdrop.tsx`/`App.tsx`, mapeadas a 11 de las 14 escenas — las 3 con 3D real se quedan sin foto a propósito) — **pero sin commitear**, porque al verificar en navegador apareció una lentitud/posible cuelgue real navegando entre escenas con foto (una transición tardó ~7s, otra hizo que Chrome reportara el renderer congelado 45s). No se diagnosticó la causa raíz antes de pausar. Logo real (vector) sigue pendiente, hay placeholder raster. Tauri sin empezar — falta decidir si instalar Rust/Cargo en esta máquina (no está instalado).
 
 ## Falta / pendiente
 
