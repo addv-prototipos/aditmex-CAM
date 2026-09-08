@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from 'react'
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion'
 import { scenes } from './scenes'
+import { SceneBackdrop } from './SceneBackdrop'
 
 // Navegación de teclado + indicador de progreso: ver MP.md §19 "Presentación
 // fullscreen". Placeholder de 3D (MP.md §21) queda pendiente — ver AGENTS.md.
@@ -36,16 +37,30 @@ function App() {
           animate={{ opacity: 1, y: 0 }}
           exit={reduceMotion ? { opacity: 1 } : { opacity: 0, y: -24 }}
           transition={{ duration: reduceMotion ? 0.01 : 0.7, ease: [0.22, 0.68, 0, 1] }}
-          className="flex h-full w-full flex-col items-start justify-center gap-6 px-10 md:px-24"
+          className="relative flex h-full w-full flex-col items-start justify-center gap-6 overflow-hidden px-10 md:px-24"
         >
-          <span className="font-body text-xs uppercase tracking-[0.14em] text-gold-light">
+          <SceneBackdrop treatment={scene.treatment} reduceMotion={Boolean(reduceMotion)} />
+
+          <span className="relative z-10 font-body text-xs uppercase tracking-[0.14em] text-gold-light">
             {scene.eyebrow}
           </span>
-          <h1 className="max-w-4xl font-display text-4xl font-semibold leading-tight text-balance md:text-6xl">
+          <h1 className="relative z-10 max-w-4xl font-display text-4xl font-semibold leading-tight text-balance md:text-6xl">
             {scene.title}
           </h1>
           {scene.body && (
-            <p className="max-w-2xl font-body text-lg text-white/70 italic">{scene.body}</p>
+            <p className="relative z-10 max-w-2xl font-body text-lg text-white/70 italic">{scene.body}</p>
+          )}
+          {scene.steps && (
+            <div className="relative z-10 flex flex-wrap gap-x-6 gap-y-3">
+              {scene.steps.map((step, i) => (
+                <span key={step} className="flex items-center gap-2 font-body text-base text-white/75">
+                  <span className="flex h-6 w-6 items-center justify-center rounded-full border border-gold-light/60 font-body text-xs text-gold-light">
+                    {String(i + 1).padStart(2, '0')}
+                  </span>
+                  {step}
+                </span>
+              ))}
+            </div>
           )}
         </motion.section>
       </AnimatePresence>
