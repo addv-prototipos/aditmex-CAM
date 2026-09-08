@@ -11,7 +11,7 @@ const SCENES = [
   { id: 'siguiente-nivel', eyebrow: 'Del producto actual al siguiente nivel', hasImage: true, has3D: true },
   { id: 'confianza', eyebrow: 'Confianza', hasImage: true, has3D: false },
   { id: 'servicio', eyebrow: 'Servicio', hasImage: true, has3D: false },
-  { id: 'michoacan', eyebrow: 'Michoacán', hasImage: false, has3D: true },
+  { id: 'michoacan', eyebrow: 'Michoacán', hasImage: true, has3D: true },
   { id: 'vision', eyebrow: 'Visión', hasImage: true, has3D: false },
   { id: 'cierre', eyebrow: 'Cierre', hasImage: true, has3D: false },
   { id: 'cta-final', eyebrow: 'Siguiente paso', hasImage: true, has3D: false },

@@ -300,3 +300,15 @@ Al revisar también los 2 assets de marca (ID-01/ID-02) se encontraron en `asset
 **Verificado al cerrar**: `tsc --noEmit`, `npm run build`, y `npx playwright test` (headed, serial) — **7/7 reales**. Acceso directo probado abriendo la ventana y confirmando título/modo app. Sitio público confirmado con `curl`.
 
 **Pendiente**: imagen #13 de Michoacán (el usuario la genera), vector real del logo, Tauri real si se decide más adelante (requiere instalar Visual Studio Build Tools, confirmación explícita antes).
+
+---
+
+## 2026-09-08 — Imagen #13 (michoacan-regional-network) integrada — 14/14 escenas con foto
+
+**Pedido**: "ya coloque la imagen en la ruta que pide el image_prompt, recuerda procesarla porque es png".
+
+**Implementado**: mismo patrón ya establecido — encontrada en `public/images/michoacan-regional-network.webp` (carpeta suelta en la raíz, sin dueño, mismo lugar equivocado de siempre), confirmado PNG real por magic bytes, convertida a WebP real con Pillow (2.1MB → 222KB) y movida a `app/public/images/`. Carpeta `public/` de la raíz eliminada de nuevo. `scenes.tsx`: escena `michoacan` recupera su `image` (`images/michoacan-regional-network.webp`). `tests/scenes.spec.ts`: `hasImage` de `michoacan` vuelve a `true`.
+
+**Verificado**: `tsc`, `build`, y `npx playwright test` (headed, serial) — 7/7 reales, incluyendo el test que valida las 14 imágenes cargando (`naturalWidth>0`, sin rotas). Ya no queda ninguna escena sin foto — las 3 con 3D real tienen foto+3D en capas (aditmex, siguiente-nivel, michoacan), las otras 11 solo foto.
+
+**Pendiente**: vector real del logo, Tauri real (sin urgencia, ver segmento anterior).

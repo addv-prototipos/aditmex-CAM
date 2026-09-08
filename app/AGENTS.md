@@ -9,7 +9,7 @@ código.
 2026-09-07 siguiendo el flujo de la skill `addv-web-app` (ver `../CLAUDE.md`
 en la raíz del repo) y el prompt maestro `../Docs/MP.md`. Estado al
 2026-09-08: **Fase 2 completa**, gate §0.9 **aprobado**, 3D real verificado,
-13/14 escenas con imagen (solo `michoacan` sin foto a propósito, ver abajo),
+**14/14 escenas con imagen** (prompt #13 de `michoacan` ya generado e integrado, 2026-09-08),
 **Playwright 7/7 passing de verdad** (verificado, no solo declarado — ver
 recuadro), guion PDF generado. Tauri sin empezar de verdad pese al commit
 que dice lo contrario (ver abajo). Reunión con el Consejo: **hoy**.
@@ -72,13 +72,14 @@ que dice lo contrario (ver abajo). Reunión con el Consejo: **hoy**.
 >      reales en dots" empezó a fallar por eso) y no era la causa real del
 >      problema (headless+paralelo, no velocidad de navegación). No lo
 >      reintroduzcas sin evidencia de que hace falta.
-> 4. **Imagen duplicada**: `michoacan` (escena 11) reusaba
+> 4. **Imagen duplicada — ya resuelta**: `michoacan` (escena 11) reusaba
 >    `michoacan-value-chain.webp`, ya usada en `contexto` (escena 2) —
 >    repetición notoria en un recorrido de 14 escenas. A pedido del
 >    usuario, en vez de quitarla sin más, se agregó un prompt nuevo (#13,
->    `michoacan-regional-network.webp`) a `Docs/images_prompt.md` para que
->    la genere aparte; mientras tanto `michoacan` no lleva `image` (queda
->    con su 3D + viñeta, ver comentario en `scenes.tsx`).
+>    `michoacan-regional-network.webp`) a `Docs/images_prompt.md`. El
+>    usuario ya la generó (mismo patrón de siempre: PNG renombrado a
+>    `.webp`, convertido a WebP real con Pillow) — integrada 2026-09-08,
+>    `michoacan` ya tiene su foto distinta. 14/14 escenas con imagen.
 > 5. Comentario desactualizado en `Scene3D.tsx` (decía que el `<Canvas>`
 >    se monta/desmonta por escena — describía el diseño viejo ya
 >    descartado) — corregido para reflejar el `<Canvas>` persistente real.
