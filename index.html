@@ -3,11 +3,11 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ADITMEX · Materias primas para panificación e industria alimentaria</title>
-<meta name="description" content="ADITMEX. Más de 10 años formulando confiabilidad para la industria panificadora mexicana. Materias primas, aditivos y saborizantes con respaldo técnico.">
+<title>ADITMEX · Aliado técnico y comercial para la industria agroalimentaria</title>
+<meta name="description" content="ADITMEX. Más de 10 años suministrando materias primas, aditivos e ingredientes a la industria alimentaria mexicana — y acompañando a las empresas a desarrollar, mejorar y estandarizar sus productos.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,500;0,9..144,600;0,9..144,700;0,9..144,900;1,9..144,500;1,9..144,600&family=Manrope:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
 /* ============================================================
    ADITMEX — Design tokens
@@ -15,35 +15,34 @@
    ============================================================ */
 :root{
   /* ------------------------------------------------------------
-     ESTIMACIÓN VISUAL — no verificada contra el sitio real.
-     No se pudo leer el CSS ni decodificar imágenes de aditmex.com.mx
-     con las herramientas disponibles. Paleta basada en convenciones
-     de marca para distribuidoras químico-alimentarias B2B en México
-     (azul = confianza técnica, teal = "ingredientes/natural",
-     ámbar = calidez cálida para CTA). Sustituye estos valores en
-     cuanto tengas los HEX oficiales de ADITMEX.
+     IDENTIDAD REAL — extraída de aditmex.com.mx (CSS del sitio en
+     vivo, 07 sep 2026): --primary #27274D, --accent #C4AC4D,
+     tipografía Montserrat/Geist. El sitio real solo define UN
+     acento (dorado); los roles "wheat"/"paprika"/"steel" de abajo
+     se mantienen por compatibilidad con el resto del CSS pero ya
+     apuntan a los valores reales de marca, no a una estimación.
      ------------------------------------------------------------ */
-  --flour:      #EEF3F7;   /* base clara institucional */
-  --flour-dim:  #DCE7EF;   /* superficie secundaria clara */
-  --paper:      #FFFFFF;   /* tarjetas claras */
-  --espresso:   #0B3556;   /* azul corporativo — fondo oscuro principal */
-  --espresso-2: #123F66;   /* azul corporativo — fondo oscuro secundario */
-  --ink:        #10202E;   /* texto principal sobre claro */
-  --ink-soft:   #48606F;   /* texto secundario sobre claro */
-  --cream-text: #EAF2F8;   /* texto principal sobre oscuro */
-  --cream-soft: #A9C3D6;   /* texto secundario sobre oscuro */
-  --wheat:      #1B8A7A;   /* teal — acento primario "ingredientes/natural" */
-  --wheat-lt:   #3FB39E;
-  --paprika:    #E8862B;   /* ámbar cálido — CTA */
-  --paprika-lt: #F2A354;
-  --steel:      #2E6F9E;   /* azul secundario — acento técnico/industrial */
-  --steel-lt:   #6FA8CC;
-  --line:       rgba(16,32,46,0.12);
-  --line-dark:  rgba(234,242,248,0.16);
+  --flour:      #F8F8F8;   /* --muted real */
+  --flour-dim:  #F0F0F5;   /* tinte navy 5% */
+  --paper:      #FFFFFF;   /* --background real */
+  --espresso:   #27274D;   /* --primary real — fondo oscuro principal */
+  --espresso-2: #3D3D70;   /* --chart-3 real — fondo oscuro secundario */
+  --ink:        #1A1A2E;   /* --foreground real */
+  --ink-soft:   #6B7280;   /* --muted-foreground real */
+  --cream-text: #F2F2F7;   /* texto principal sobre oscuro */
+  --cream-soft: #C2C2D6;   /* texto secundario sobre oscuro */
+  --wheat:      #C4AC4D;   /* --accent real — único acento de marca */
+  --wheat-lt:   #D4BE6D;   /* --chart-4 real */
+  --paprika:    #C4AC4D;   /* mismo acento real (marca no tiene 2º color) */
+  --paprika-lt: #D4BE6D;
+  --steel:      #3D3D70;   /* --chart-3 real — azul secundario */
+  --steel-lt:   #7A7AB0;
+  --line:       rgba(39,39,77,0.12);   /* alpha de --primary, patrón real del sitio */
+  --line-dark:  rgba(255,255,255,0.14);
 
-  --serif: 'Fraunces', serif;
-  --sans:  'Manrope', sans-serif;
-  --mono:  'IBM Plex Mono', monospace;
+  --serif: 'Montserrat', sans-serif;   /* --font-heading real */
+  --sans:  'Geist', sans-serif;        /* --font-geist real */
+  --mono:  'Geist Mono', monospace;    /* --font-geist-mono real */
 
   --container: 1200px;
   --ease: cubic-bezier(.22,.68,0,1);
@@ -447,13 +446,13 @@ a:focus-visible, button:focus-visible{outline:2px solid var(--wheat); outline-of
 ============================================================ -->
 <header class="nav" id="siteNav">
   <div class="container nav-inner">
-    <a href="#inicio" class="logo">ADITMEX <em>materias primas</em></a>
+    <a href="#inicio" class="logo">ADITMEX <em>aliado agroalimentario</em></a>
     <nav class="nav-links">
       <a href="#autoridad">Trayectoria</a>
       <a href="#segmentos">Industrias</a>
       <a href="#productos">Portafolio</a>
       <a href="#impacto">Resultados</a>
-      <a href="#contacto" class="btn btn-primary nav-cta">Solicitar asesoría</a>
+      <a href="#contacto" class="btn btn-primary nav-cta">Conversemos</a>
     </nav>
   </div>
 </header>
@@ -465,11 +464,11 @@ a:focus-visible, button:focus-visible{outline:2px solid var(--wheat); outline-of
   <div class="hero-media"></div>
   <canvas id="grain-canvas"></canvas>
   <div class="container hero-inner">
-    <div class="eyebrow hero-eyebrow reveal">Materias primas para la industria panificadora</div>
-    <h1 class="reveal" style="--d:.08s">Cada fórmula que sale de su horno <i>empieza en la nuestra.</i></h1>
-    <p class="hero-sub reveal" style="--d:.16s">Más de una década suministrando a la industria alimentaria mexicana los ingredientes funcionales, aditivos y saborizantes que sostienen la consistencia, el rendimiento y la vida de anaquel de sus productos — con respaldo técnico en cada kilogramo.</p>
+    <div class="eyebrow hero-eyebrow reveal">Aliado técnico y comercial para la agroindustria</div>
+    <h1 class="reveal" style="--d:.08s">Cuando una idea agroalimentaria necesita convertirse en producto, <i>necesita respaldo.</i></h1>
+    <p class="hero-sub reveal" style="--d:.16s">Más de una década suministrando materias primas, aditivos e ingredientes a la industria alimentaria mexicana. Nuestra propuesta va más allá de vender insumos: acompañamos a las empresas agroalimentarias de Michoacán a encontrar las soluciones que necesitan para desarrollar, mejorar y estandarizar sus productos.</p>
     <div class="hero-actions reveal" style="--d:.24s">
-      <a href="#contacto" class="btn btn-primary">Solicitar cotización <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+      <a href="#contacto" class="btn btn-primary">Conversemos <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
       <a href="#productos" class="btn btn-ghost">Ver portafolio técnico</a>
     </div>
     <div class="hero-specs reveal" style="--d:.32s">
@@ -496,7 +495,7 @@ a:focus-visible, button:focus-visible{outline:2px solid var(--wheat); outline-of
     <div>
       <div class="eyebrow reveal">Quiénes somos</div>
       <h2 class="reveal" style="--d:.05s">Una década formulando <i>confiabilidad</i>, no solo suministrando insumos.</h2>
-      <p class="lead reveal" style="--d:.1s">ADITMEX es una comercializadora especializada en materias primas para las industrias de alimentos, aromas, cosmética e industrial en México. Trabajamos junto a plantas de panificación y repostería para resolver algo más que una lista de compras: la estabilidad de una fórmula, mes tras mes, lote tras lote.</p>
+      <p class="lead reveal" style="--d:.1s">ADITMEX es una comercializadora especializada en materias primas, aditivos e ingredientes para las industrias de alimentos, aromas, cosmética e industrial en México. Trabajamos junto a empresas agroalimentarias — desde plantas de panificación hasta productores que buscan transformar su materia prima en un producto con mayor valor agregado — para resolver algo más que una lista de compras: la estabilidad de una fórmula, mes tras mes, lote tras lote.</p>
       <p class="lead reveal" style="--d:.15s">Detrás de cada pedido hay asesoría técnica real — sobre dosificación, función y aplicación — respaldada por alianzas con proveedores globales de talla industrial.</p>
     </div>
     <div class="stat-list">
@@ -515,29 +514,29 @@ a:focus-visible, button:focus-visible{outline:2px solid var(--wheat); outline-of
   <div class="container">
     <div class="chain-head">
       <div class="eyebrow reveal">Cómo trabajamos</div>
-      <h2 class="reveal" style="--d:.05s">Del grano a la fórmula que sale de línea</h2>
-      <p class="reveal" style="--d:.1s">Cuatro etapas donde ADITMEX interviene con ingredientes funcionales, asesoría de dosificación y disponibilidad, para que su equipo de producción no tenga que resolverlas solo.</p>
+      <h2 class="reveal" style="--d:.05s">De la materia prima al producto transformado</h2>
+      <p class="reveal" style="--d:.1s">No empezamos preguntando qué producto quiere comprar. Empezamos preguntando qué necesita resolver — y acompañamos el proceso hasta que la solución está en su línea de producción.</p>
     </div>
     <div class="chain-row">
       <div class="chain-step reveal" style="--d:.05s">
-        <div class="num"><span class="ring"></span>01 · Materia base</div>
-        <h3>Harinas y almidones</h3>
-        <p>Harina de trigo sanitizada, harina de soya sin gluten, almidón de maíz y fécula de papa — la estructura sobre la que se construye cada producto.</p>
+        <div class="num"><span class="ring"></span>01 · Escuchamos</div>
+        <h3>La necesidad real</h3>
+        <p>Qué está intentando desarrollar, mejorar o estandarizar — antes de hablar de insumos.</p>
       </div>
       <div class="chain-step reveal" style="--d:.12s">
-        <div class="num"><span class="ring"></span>02 · Funcionalidad</div>
-        <h3>Mejoradores y textura</h3>
-        <p>Gomas, ácido ascórbico, conservadores y agentes leudantes que estabilizan fermentación, volumen y vida de anaquel.</p>
+        <div class="num"><span class="ring"></span>02 · Identificamos</div>
+        <h3>Los insumos correctos</h3>
+        <p>Materias primas, aditivos e ingredientes que responden a su proceso y su producto, no un catálogo genérico.</p>
       </div>
       <div class="chain-step reveal" style="--d:.19s">
-        <div class="num"><span class="ring"></span>03 · Sensorial</div>
-        <h3>Sabor y aroma</h3>
-        <p>Saborizantes naturales como el aceite esencial de naranja prensado en frío, para glaseados, rellenos y pan dulce.</p>
+        <div class="num"><span class="ring"></span>03 · Asesoramos</div>
+        <h3>Función y dosificación</h3>
+        <p>Compartimos recomendaciones técnicas de aplicación antes de cotizar, no después de un problema en línea.</p>
       </div>
       <div class="chain-step reveal" style="--d:.26s">
-        <div class="num"><span class="ring"></span>04 · Acabado</div>
-        <h3>Rellenos y coberturas</h3>
-        <p>Pectinas, hidrocoloides y conservadores dosificados con precisión para mermeladas, salsas y aderezos de acompañamiento.</p>
+        <div class="num"><span class="ring"></span>04 · Acompañamos</div>
+        <h3>Abastecimiento continuo</h3>
+        <p>De la prueba piloto a la producción en volumen, con seguimiento y disponibilidad sostenida.</p>
       </div>
     </div>
   </div>
@@ -550,16 +549,16 @@ a:focus-visible, button:focus-visible{outline:2px solid var(--wheat); outline-of
   <div class="container">
     <div class="section-head">
       <div class="eyebrow reveal">A quién servimos</div>
-      <h2 class="reveal" style="--d:.05s">Soluciones para cada <i>industria</i>, profundidad real en panificación</h2>
-      <p class="reveal" style="--d:.1s">Atendemos cuatro sectores industriales. Para la industria panificadora y repostera, esa atención se traduce en un portafolio dedicado y asesoría de formulación puntual.</p>
+      <h2 class="reveal" style="--d:.05s">Soluciones para cada <i>industria</i>, mayor profundidad en alimentos</h2>
+      <p class="reveal" style="--d:.1s">Atendemos cuatro sectores industriales. En alimentos, esa atención se traduce en un portafolio dedicado y asesoría de formulación puntual para empresas que están desarrollando, mejorando o estandarizando su producto.</p>
     </div>
 
     <div class="segment-featured reveal">
-      <div class="media"><span class="tag">Sector prioritario</span></div>
+      <div class="media"><span class="tag">Mayor profundidad técnica</span></div>
       <div class="body">
-        <div class="eyebrow">Alimentos · Panificación y repostería</div>
-        <h3>La estabilidad de su línea de producción, garantizada ingrediente por ingrediente</h3>
-        <p>Desde la harina base hasta el conservador que extiende la vida de anaquel del pan terminado, formulamos junto a su equipo técnico para sostener volumen, miga y consistencia en cada tanda.</p>
+        <div class="eyebrow">Alimentos · Desarrollo y transformación de producto</div>
+        <h3>Del ingrediente correcto a un producto más estable y consistente</h3>
+        <p>Desde la materia base hasta el conservador que extiende la vida de anaquel, formulamos junto a su equipo técnico para sostener consistencia, textura y calidad lote tras lote — en panificación y en el resto de la industria alimentaria.</p>
         <div class="chiplist">
           <span class="spec"><span class="dot"></span>Harinas y almidones</span>
           <span class="spec"><span class="dot"></span>Mejoradores de masa</span>
@@ -604,9 +603,9 @@ a:focus-visible, button:focus-visible{outline:2px solid var(--wheat); outline-of
 <section class="products" id="productos">
   <div class="container">
     <div class="section-head">
-      <div class="eyebrow reveal">Portafolio técnico</div>
-      <h2 class="reveal" style="--d:.05s">Ficha técnica de <i>ingredientes</i> para panificación</h2>
-      <p class="reveal" style="--d:.1s">Función, beneficio y aplicación de cada insumo — la misma información que comparte nuestro equipo técnico antes de una cotización.</p>
+      <div class="eyebrow reveal">Ejemplo de profundidad técnica</div>
+      <h2 class="reveal" style="--d:.05s">Así acompañamos la formulación — ejemplo en <i>panificación</i></h2>
+      <p class="reveal" style="--d:.1s">No es nuestro catálogo completo: es un ejemplo de la asesoría técnica — función, dosificación y aplicación — que compartimos con cualquier empresa agroalimentaria antes de proponer una solución.</p>
     </div>
 
     <div class="tabs" role="tablist">
@@ -818,11 +817,11 @@ a:focus-visible, button:focus-visible{outline:2px solid var(--wheat); outline-of
 <section class="cta-final" id="contacto">
   <div class="container cta-inner">
     <div class="eyebrow reveal" style="color:var(--wheat-lt)">Siguiente paso</div>
-    <h2 class="reveal" style="--d:.05s">Hablemos de la fórmula <i>que su planta necesita.</i></h2>
-    <p class="lead reveal" style="--d:.1s">Cuéntenos qué producto está formulando y qué necesita resolver — volumen, textura, vida de anaquel o costo. Respondemos con disponibilidad y precio en menos de 24 horas.</p>
+    <h2 class="reveal" style="--d:.05s">Hablemos de lo que su empresa <i>está desarrollando.</i></h2>
+    <p class="lead reveal" style="--d:.1s">No prometemos tener todas las respuestas. Prometemos trabajar para encontrar la correcta — cuéntenos qué está buscando desarrollar, mejorar o estandarizar, y qué insumos o asesoría necesita para lograrlo.</p>
     <div class="cta-row reveal" style="--d:.15s">
       <a href="mailto:ventas@aditmex.com.mx" class="btn btn-primary">Escribir a ventas@aditmex.com.mx</a>
-      <a href="https://wa.me/524435145662?text=Hola%2C%20me%20interesa%20cotizar%20materias%20primas%20para%20panificaci%C3%B3n" class="btn btn-ghost" target="_blank" rel="noopener">Escribir por WhatsApp</a>
+      <a href="https://wa.me/524435145662?text=Hola%2C%20me%20gustar%C3%ADa%20conversar%20sobre%20c%C3%B3mo%20ADITMEX%20puede%20colaborar%20con%20mi%20empresa" class="btn btn-ghost" target="_blank" rel="noopener">Escribir por WhatsApp</a>
     </div>
     <div class="cta-contacts reveal" style="--d:.2s">
       <div><span class="lbl">Oficina</span>Santos Degollado 595, Nueva Chapultepec, 58280 Morelia, Mich.</div>

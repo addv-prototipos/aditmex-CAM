@@ -17,11 +17,18 @@ Nada activo ahora mismo — se acaba de cerrar el segmento de creación de docs 
 ## Falta / pendiente
 
 - **Docker**: el protocolo exige "Docker siempre" pero el sitio no tiene contenedorización todavía. No implementado — pendiente de que el usuario confirme si quiere levantarlo (nginx sirviendo estático sería la opción más simple).
-- **Paleta de colores no verificada**: los tokens CSS en `index.html` son una estimación de marca, no los HEX oficiales de ADITMEX. Marcado explícitamente en el propio código (`index.html` líneas ~16-25).
+- **Rediseño mayor (`Docs/MP.md`)**: existe un prompt maestro que pide reconstruir todo el sitio como app React/Vite/Tailwind/Three.js empaquetada con Tauri (.exe/.msi) — 8 etapas con gates de aprobación. **No iniciado.** Conflicto de calendario detectado y señalado al usuario: la reunión con el Consejo es el 2026-09-08 (día siguiente a esta sesión), incompatible con un rediseño de esa magnitud en el tiempo disponible. A la espera de que el usuario decida si se ejecuta MP.md completo (post-reunión) o se sigue iterando sobre el `index.html` estático actual.
 - **Pruebas**: no hay pruebas unitarias ni funcionales todavía. Para un sitio estático sin lógica de negocio compleja, el piso mínimo razonable sería smoke test (build/lint HTML, verificación de enlaces/imágenes rotos, chequeo de accesibilidad) — no implementado, pendiente de definir alcance con el usuario.
-- **Duplicidad de PDFs**: `DOC-20260907-WA0048.pdf` y `Guia_Estudio_ADITMEX_Consejo_Agroalimentario_Michoacan-1.pdf` están sueltos en la raíz del repo (sin trackear) y parecen duplicar contenido que ya vive en `Docs/`. No se ha tocado — pendiente de confirmar con el usuario si se limpian/mueven.
 - **`.idea/`** sin trackear — carpeta de configuración de IDE (JetBrains). No se ha decidido si debe ir a `.gitignore` o si el usuario la quiere trackeada.
 - Sin `.gitignore` en el repo.
+
+## Cerrado
+
+- **Realineación de contenido de `index.html` a la reunión del Consejo (2026-09-08)**: el sitio estaba enfocado 100% en panificación (catálogo/cotización, "cada fórmula que sale de su horno...") y no reflejaba el posicionamiento del brief ("aliado técnico agroalimentario", sin lista de precios). Confirmado con el usuario que este `index.html` SÍ es el material para la reunión — se reescribió copy en: `<title>`/meta, nav, hero, "Quiénes somos", el bloque "Cómo trabajamos" (ahora genérico: escuchar → identificar → asesorar → acompañar, tomado de la política de servicio real del brief), la sección de segmentos (panificación pasa de "sector prioritario" exclusivo a "mayor profundidad técnica" dentro de un panorama agroalimentario más amplio), la intro del portafolio técnico (reencuadrada explícitamente como "ejemplo", no catálogo completo — cumple la regla del brief "no conviertas la reunión en una lista de precios"), y el CTA final (de "cotización" a "conversación", usando la frase de política de servicio "no prometemos tener todas las respuestas..."). CSS/JS/estructura sin tocar — cero riesgo de regresión técnica. Verificación: revisada visualmente en navegador sección por sección (hero, quiénes somos, cómo trabajamos, segmentos, portafolio, resultados, CTA final, footer) — sin roturas de layout, contraste correcto, tipografía cargando bien.
+
+- PDFs duplicados eliminados: `Docs/Brief.pdf` y `Docs/Guia_Estudio_ADITMEX_Consejo_Agroalimentario_Michoacan-1.pdf` (quedan solo sus versiones `.md`).
+- **Identidad de marca real aplicada a `index.html`**: paleta y tipografía extraídas en vivo del CSS de `aditmex.com.mx` (07 sep 2026) — `#27274D` marino (`--primary`), `#C4AC4D` dorado (`--accent`), Montserrat (headings) + Geist/Geist Mono (cuerpo/mono). Reemplaza la paleta placeholder (teal/ámbar/Fraunces) que antes estaba marcada como "no verificada". Verificado visualmente en navegador (servidor local), sin regresiones.
+- `Docs/images_prompt.md` ampliado con sección `IDENTIDAD DE MARCA` (ID-01 logo revectorizado, ID-02 textura de marca) separada de las 12 escenas narrativas — usa exclusivamente los 2 hex reales.
 
 ## Decisiones ya tomadas
 
