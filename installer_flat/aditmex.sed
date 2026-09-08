@@ -1,0 +1,45 @@
+[Version]
+Class=IEXPRESS
+SEDVersion=3
+[Options]
+PackagePurpose=InstallApp
+ShowInstallProgramWindow=0
+HideExtractAnimation=1
+UseLongFileName=1
+InsideCompressed=0
+CAB_FixedSize=0
+CAB_ResvCodeSigning=0
+RebootMode=N
+InstallPrompt=%InstallPrompt%
+DisplayLicense=%DisplayLicense%
+FinishMessage=%FinishMessage%
+TargetName=%TargetName%
+FriendlyName=%FriendlyName%
+AppLaunched=%AppLaunched%
+PostInstallCmd=%PostInstallCmd%
+AdminQuietInstCmd=%AdminQuietInstCmd%
+UserQuietInstCmd=%UserQuietInstCmd%
+SourceFiles=SourceFiles
+[Strings]
+InstallPrompt=
+DisplayLicense=
+FinishMessage=Instalacion completa. Revisa el escritorio.
+TargetName=D:\srv\Aditmex\adtmex_ventas\installADTMX.exe
+FriendlyName=ADITMEX Instalador
+AppLaunched=cmd.exe /c install.cmd
+PostInstallCmd=<None>
+AdminQuietInstCmd=
+UserQuietInstCmd=
+FILE0="dist.zip"
+FILE1="icon.ico"
+FILE2="install.cmd"
+FILE3="install.ps1"
+FILE4="launch-aditmex.ps1"
+[SourceFiles]
+SourceFiles0=D:\srv\Aditmex\adtmex_ventas\installer_flat\
+[SourceFiles0]
+%FILE0%=
+%FILE1%=
+%FILE2%=
+%FILE3%=
+%FILE4%=
