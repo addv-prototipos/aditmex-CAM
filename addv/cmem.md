@@ -121,3 +121,25 @@ Registro comprimido de la conversación del proyecto bajo el protocolo `addv-web
 Verificado con `git fetch` a ambos remotes antes de eliminar `origin-ventas`: `aditmex-ventas.git` en `ae7cbf8` (intacto), `aditmex-CAM.git` en `e0c4183` (todo). Único remote local ahora: `origin` → `aditmex-CAM.git`.
 
 **Pendiente**: gate de aprobación humana antes de Fase 3 de `MP.md` (3D real, Tauri) — sin iniciar. Resto de pendientes de `project_state.md` sigue abierto.
+
+---
+
+## 2026-09-07 — Sistema visual de fondos por escena (siguiente paso de AGENTS.md)
+
+**Pedido**: "continua con el siguiente paso" → siguiente paso de `app/AGENTS.md` era "sistema visual completo" (composición por escena, sin imágenes finales todavía).
+
+**Propuesta antes/después**: siguiendo la regla del repo de que ningún cambio visual se implementa sin propuesta + confirmación explícita, se publicó un artifact (`https://claude.ai/code/artifact/abfcf343-886a-48ce-8568-0e31c6550f16`) comparando 3 escenas reales (portada, oportunidad, confianza) en su estado actual vs. 3 tratamientos de fondo propuestos — solo CSS/SVG/canvas, sin imágenes nuevas, sin texto nuevo, usando únicamente los 2 colores de marca. El usuario confirmó: "adelante, impleméntalo".
+
+**Implementado**:
+- `app/src/SceneBackdrop.tsx` (nuevo): componente con 4 variantes — `retrato` (viñeta radial + `<canvas>` de partículas doradas, respeta `prefers-reduced-motion`), `cadena` (línea + nodos SVG diagonal), `lista` (guías horizontales sutiles), `base` (solo viñeta suave).
+- `scenes.tsx`: campo `treatment` agregado a cada una de las 14 escenas. Al mapear el sistema al contenido real se corrigió la asignación que había quedado en el pie del artifact (ahí decía "cadena → oportunidad, siguiente-nivel, portafolio" y "lista → qué-hacemos, confianza"): revisando el texto real, `qué-hacemos` también es una cadena con flechas igual que `oportunidad`/`siguiente-nivel` (debe ir en `cadena`, no en `lista`), y `portafolio` es una frase retórica sin cadena ni enumeración (va en `base`). La única escena con contenido realmente enumerado es `confianza` — es la única en `lista`. Mapeo final: retrato→portada/aditmex/michoacan/cierre/cta-final (5) · cadena→oportunidad/qué-hacemos/siguiente-nivel (3) · lista→confianza (1) · base→contexto/problema/portafolio/servicio/vision (5).
+- Escena `confianza`: el body "01 Escuchamos · 02 Entendemos · …" se reestructuró a un array `steps` renderizado como badges numerados en `App.tsx` — mismas 5 palabras, sin invención, solo cambia prosa→estructura (igual que se mostró en el artifact).
+- `App.tsx`: importa `SceneBackdrop`, lo renderiza como primera capa dentro de `motion.section` con `relative`/`z-0`, y sube el contenido de texto existente a `relative z-10` para que no quede tapado.
+
+**Verificado**: `tsc --noEmit` y `npm run build` limpios (bundle CSS/JS creció ~1KB/3KB, nada llamativo). Servidor dev en puerto nuevo (5174, para no chocar con instancias previas), recorrido de las 14 escenas con `get_page_text` (contenido + tratamiento correcto en cada una) y screenshots de las 4 variantes (retrato, cadena, lista, base) confirmando que se ven como en la propuesta. Se repitió la misma falsa alarma del contador "congelado" ya documentada (tab con bundle cacheado) — se resolvió igual, con hard-reload; no es un bug del código, ya está anotado en "Gotchas operativos" de `AGENTS.md` para que no se vuelva a investigar desde cero. Sin errores de consola.
+
+**Incidente evitado esta vez**: se detuvo el servidor de desarrollo matando el proceso por PID específico (`kill $(cat pidfile)`), no con `taskkill /IM node.exe` — no se repitió el incidente de la sesión anterior que tumbó la conexión MCP de Ruflo.
+
+**Commit**: `a8bab14 feat(app): sistema visual de fondos por escena (retrato/cadena/lista/base)` — pusheado directo a `aditmex-CAM.git` (único remote).
+
+**Pendiente**: mock 3D (MP.md §22) es el siguiente paso de `AGENTS.md`, luego el gate de aprobación humana antes de Fase 3. Sin iniciar.

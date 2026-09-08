@@ -162,10 +162,14 @@ sincronizados con el estado real, sin errores de consola. Commiteado como
 
 ## Qué sigue (en orden)
 
-1. **Sistema visual completo**: hoy solo hay tipografía + color. Falta
-   composición por escena (media, negative space, jerarquía) — usar
-   `Docs/images_prompt.md` como guía de qué imagen va en cada escena
-   (todavía son placeholders/mocks, no imágenes finales generadas).
+1. ~~Sistema visual completo~~ — **hecho** (`a8bab14`). `SceneBackdrop.tsx`
+   define 3 tratamientos (`retrato`: viñeta+partículas doradas · `cadena`:
+   línea/nodos SVG · `lista`: guías sutiles + badges numerados · `base`:
+   viñeta sola), cada escena de `scenes.tsx` tiene un campo `treatment`
+   asignado según su contenido real. Propuesta con antes/después
+   presentada como artifact y confirmada por el usuario antes de tocar
+   código. Sigue sin imágenes finales — es composición con CSS/SVG/canvas,
+   no arte generado.
 2. **Mock 3D** (MP.md §22): antes de integrar Three.js real, un placeholder
    (gradiente animado, canvas de partículas simple como el que ya existe en
    el `index.html` de raíz) es suficiente para que el prototipo sea
