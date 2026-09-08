@@ -58,7 +58,7 @@ export const scenes: Scene[] = [
     eyebrow: 'ADITMEX',
     title: 'Materias primas que abren posibilidades.',
     treatment: 'retrato',
-    image: '/images/hero-agroindustria-michoacan.webp',
+    image: 'images/hero-agroindustria-michoacan.webp',
   },
   {
     id: 'contexto',
@@ -66,7 +66,7 @@ export const scenes: Scene[] = [
     title: 'Michoacán produce.',
     body: 'El valor no termina en la cosecha.',
     treatment: 'base',
-    image: '/images/michoacan-value-chain.webp',
+    image: 'images/michoacan-value-chain.webp',
   },
   {
     id: 'oportunidad',
@@ -78,7 +78,7 @@ export const scenes: Scene[] = [
       </>
     ),
     treatment: 'cadena',
-    image: '/images/transformed-food-products.webp',
+    image: 'images/transformed-food-products.webp',
   },
   {
     id: 'problema',
@@ -86,14 +86,14 @@ export const scenes: Scene[] = [
     title: 'A veces, crecer no requiere una idea nueva.',
     body: 'Requiere encontrar la solución correcta.',
     treatment: 'base',
-    image: '/images/mexican-food-entrepreneur.webp',
+    image: 'images/mexican-food-entrepreneur.webp',
   },
   {
     id: 'aditmex',
     eyebrow: 'Quién es ADITMEX',
     title: 'El aliado detrás del ingrediente.',
     treatment: 'retrato',
-    image: '/images/agro-texture-background.webp',
+    image: 'images/agro-texture-background.webp',
   },
   {
     id: 'qué-hacemos',
@@ -105,7 +105,7 @@ export const scenes: Scene[] = [
       </>
     ),
     treatment: 'cadena',
-    image: '/images/ingredient-supply.webp',
+    image: 'images/ingredient-supply.webp',
   },
   {
     id: 'portafolio',
@@ -113,7 +113,7 @@ export const scenes: Scene[] = [
     title:
       'No empezamos preguntando qué producto quieres comprar. Empezamos preguntando qué necesitas resolver.',
     treatment: 'base',
-    image: '/images/food-ingredients-premium.webp',
+    image: 'images/food-ingredients-premium.webp',
   },
   {
     id: 'siguiente-nivel',
@@ -125,7 +125,7 @@ export const scenes: Scene[] = [
     ),
     body: 'Fruta → pulpa → bebida · Fruta → preparación → mermelada',
     treatment: 'cadena',
-    image: '/images/brand/aditmex-brand-texture.webp',
+    image: 'images/brand/aditmex-brand-texture.webp',
   },
   {
     id: 'confianza',
@@ -133,14 +133,14 @@ export const scenes: Scene[] = [
     title: 'El ADITMEX Standard',
     steps: ['Escuchamos', 'Entendemos', 'Buscamos', 'Proponemos', 'Damos seguimiento'],
     treatment: 'lista',
-    image: '/images/food-quality-standardization.webp',
+    image: 'images/food-quality-standardization.webp',
   },
   {
     id: 'servicio',
     eyebrow: 'Servicio',
     title: 'Así trabajamos.',
     treatment: 'base',
-    image: '/images/food-business-consultation.webp',
+    image: 'images/food-business-consultation.webp',
   },
   {
     id: 'michoacan',
@@ -148,14 +148,14 @@ export const scenes: Scene[] = [
     title:
       'Queremos que las empresas agroalimentarias de Michoacán tengan cerca un aliado para resolver lo que necesitan para crecer.',
     treatment: 'red',
-    image: '/images/michoacan-value-chain.webp',
+    image: 'images/michoacan-value-chain.webp',
   },
   {
     id: 'vision',
     eyebrow: 'Visión',
     title: 'Una nueva etapa de crecimiento necesita proveedores que piensen contigo.',
     treatment: 'base',
-    image: '/images/michoacan-agroindustry.webp',
+    image: 'images/michoacan-agroindustry.webp',
   },
   {
     id: 'cierre',
@@ -163,7 +163,7 @@ export const scenes: Scene[] = [
     title: 'Una buena idea merece algo más que una materia prima.',
     body: 'Merece respaldo. ADITMEX.',
     treatment: 'retrato',
-    image: '/images/ingredient-particles-abstract.webp',
+    image: 'images/ingredient-particles-abstract.webp',
   },
   {
     id: 'cta-final',
@@ -171,6 +171,6 @@ export const scenes: Scene[] = [
     title: 'Quien conoce lo que necesita para avanzar, deja de depender del azar.',
     body: 'ADITMEX — El respaldo detrás de lo que quieres desarrollar.',
     treatment: 'retrato',
-    image: '/images/product-development-food.webp',
+    image: 'images/product-development-food.webp',
   },
 ]
