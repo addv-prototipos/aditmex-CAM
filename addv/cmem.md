@@ -143,3 +143,23 @@ Verificado con `git fetch` a ambos remotes antes de eliminar `origin-ventas`: `a
 **Commit**: `a8bab14 feat(app): sistema visual de fondos por escena (retrato/cadena/lista/base)` — pusheado directo a `aditmex-CAM.git` (único remote).
 
 **Pendiente**: mock 3D (MP.md §22) es el siguiente paso de `AGENTS.md`, luego el gate de aprobación humana antes de Fase 3. Sin iniciar.
+
+---
+
+## 2026-09-07 — Mocks de los 3 momentos 3D (MP.md §21/§22)
+
+**Pedido**: "continua por favor" → siguiente paso de `AGENTS.md`: mock 3D antes del gate.
+
+**Analizado**: `MP.md §21` (no §22 como decía `AGENTS.md` de una sesión anterior — corregido) pide 2-3 "momentos 3D memorables": partículas organizándose, cadena materia-prima→ingrediente→producto, red productores-ingredientes-mercado, con fallback 2D. `§22` es la regla general de "mockea antes de las imágenes finales" — ya aplicada.
+
+**Propuesta** (texto, sin artifact esta vez — extensión de un sistema ya aprobado, no uno nuevo): 3 momentos ubicados en escenas existentes, reusando el sistema `SceneBackdrop` — organize en `aditmex`, stagger en `siguiente-nivel`, red nueva en `michoacan`. Confirmado por el usuario: "adelante con esto".
+
+**Implementado** (`91d9eac`):
+- `Particles` (`SceneBackdrop.tsx`) gana `organize?: boolean`: en vez de deriva aleatoria continua, las partículas convergen a un clúster (72%/42% del canvas) en 1.4s con ease-out, y luego oscilan ahí con seno/coseno determinista (sin acumular velocidad — no hay riesgo de que se alejen). Activado solo en escena `aditmex`.
+- `ChainLines` gana `stagger?: boolean`: la línea usa `stroke-dasharray`/`line-grow` (keyframe nuevo en `index.css`) y cada nodo usa `node-in` con `animation-delay` escalonado. Activado solo en `siguiente-nivel` — las otras 2 escenas `cadena` (oportunidad, qué-hacemos) quedan estáticas como antes.
+- `NetworkGraph` (nuevo): grafo SVG de 8 nodos / 10 aristas, 2 "hubs" con `node-pulse` (keyframe nuevo). Nuevo valor de `Treatment`: `'red'`. Escena `michoacan` se reasigna de `retrato` a `red` — encaja mejor con "red de aliados" que el tratamiento genérico de apertura/cierre.
+- 3 `@keyframes` nuevos en `index.css` (`node-in`, `line-grow`, `node-pulse`) — la regla global `prefers-reduced-motion` que ya existía (colapsa `animation-duration` a 0.01ms) los cubre automáticamente, no hizo falta condicionar cada uno por JS.
+
+**Verificación — INCOMPLETA, anotado con honestidad**: `tsc --noEmit` y `npm run build` limpios. Se intentó abrir en navegador (puerto nuevo 5175, servidor detenido después por PID específico, no por `taskkill /IM`) pero **la extensión Claude-in-Chrome no conectó** (2 intentos, `tabs_context_mcp` devolvió "Browser extension is not connected" con Chrome corriendo). Se paró de reintentar según la regla de no más de 2-3 intentos, y se commiteó dejando explícito en el mensaje de commit, en `AGENTS.md` y aquí que el timing/aspecto real de las 3 animaciones (organize, stagger, pulso) **no se ha visto todavía** — el código está razonado pero no confirmado visualmente. No se afirmó una verificación que no ocurrió.
+
+**Pendiente**: abrir `/app` en navegador la próxima sesión y confirmar visualmente los 3 momentos antes de darlos por buenos. Después: gate de aprobación humana (MP.md §0.9) antes de Fase 3 — sigue sin iniciar.

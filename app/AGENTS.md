@@ -170,10 +170,16 @@ sincronizados con el estado real, sin errores de consola. Commiteado como
    presentada como artifact y confirmada por el usuario antes de tocar
    código. Sigue sin imágenes finales — es composición con CSS/SVG/canvas,
    no arte generado.
-2. **Mock 3D** (MP.md §22): antes de integrar Three.js real, un placeholder
-   (gradiente animado, canvas de partículas simple como el que ya existe en
-   el `index.html` de raíz) es suficiente para que el prototipo sea
-   revisable.
+2. ~~Mock 3D~~ (MP.md §21/§22) — **hecho, verificación visual pendiente**
+   (`91d9eac`). Los 3 momentos de §21 mockeados con CSS/SVG/canvas, sin
+   Three.js: partículas organizándose (`aditmex`), cadena apareciendo en
+   secuencia (`siguiente-nivel`), red de nodos con pulso (`michoacan`,
+   treatment nuevo `red`). `tsc`/`build` limpios, pero la extensión
+   Claude-in-Chrome no conectó esa sesión (2 intentos, Chrome sí corría) —
+   **antes de dar esto por bueno, ábrelo en navegador y confirma que las 3
+   animaciones se ven/sienten bien** (timing del organize ~1.4s, stagger
+   de la cadena, pulso de los hubs de la red). Si algo no cuadra, es
+   código nuevo sin probar visualmente, no un "ya aprobado".
 3. **GATE DE APROBACIÓN HUMANA** (MP.md §0.9): al completar el prototipo
    con mocks, preséntalo y **detente**. No sigas con imágenes finales, 3D
    real, Tauri ni empaquetado sin que el usuario diga algo equivalente a
