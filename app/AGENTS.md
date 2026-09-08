@@ -7,11 +7,11 @@ código.
 
 **Nota de origen**: este proyecto lo empezó Claude Code (Claude Sonnet 5) el
 2026-09-07 siguiendo el flujo de la skill `addv-web-app` (ver `../CLAUDE.md`
-en la raíz del repo) y el prompt maestro `../Docs/MP.md`. Al 2026-09-07
-(cierre de sesión) el estado es: **Fase 2 completa (14/14 escenas)**,
-verificada y commiteada (`e0c4183`) — ver sección "Qué existe ahora mismo".
-Lo que queda es exactamente lo descrito en "Qué sigue" abajo, en ese orden,
-sin saltarse el gate.
+en la raíz del repo) y el prompt maestro `../Docs/MP.md`. Estado al
+2026-09-07 (cierre de sesión): **Fase 2 completa (14/14 escenas)**, gate de
+MP.md §0.9 **aprobado**, **Fase 3 en curso** — 3D real ya hecho y
+verificado, imágenes finales en proceso (el usuario las genera aparte),
+Tauri sin empezar (falta Rust). Ver "Qué sigue" para el detalle exacto.
 
 Si continúas con otro modelo (el dueño del proyecto mencionó "OpenCode con
 muse spark v1.2" — no es un modelo que yo reconozca en mi conocimiento, así
@@ -188,15 +188,35 @@ sincronizados con el estado real, sin errores de consola. Commiteado como
    documentado en "Gotchas operativos" (`AnimatePresence mode="wait"`
    encola exit/enter por cada paso), no un bug nuevo; se confirmó
    esperando a que el DOM alcanzara el índice mostrado.
-3. **GATE DE APROBACIÓN HUMANA** (MP.md §0.9): al completar el prototipo
-   con mocks, preséntalo y **detente**. No sigas con imágenes finales, 3D
-   real, Tauri ni empaquetado sin que el usuario diga algo equivalente a
-   "aprobado" / "continúa" / "construye la versión final" (MP.md §0.10 —
-   "se ve bien" o "me gusta" NO cuenta como luz verde).
-4. Después del gate: 3 momentos 3D reales con React Three Fiber (partículas
-   organizándose / cadena materia-prima→ingrediente→producto / red de
-   conexión productores-ingredientes-mercado), imágenes finales desde
-   `Docs/images_prompt.md`, Tauri 2 para `.exe`/`.msi`, QA (MP.md §39 Fase 4).
+3. ~~GATE DE APROBACIÓN HUMANA~~ (MP.md §0.9) — **aprobado 2026-09-07**
+   ("apruebo, sigue a Fase 3"). Fase 3 en curso.
+4. ~~3D real (React Three Fiber)~~ — **hecho** (`Scene3D.tsx`), verificado
+   visualmente. Detalle en `addv/cmem.md` (segmento "3D real Fase 3").
+   Resumen técnico:
+   - `webgl.ts`: `hasWebGL()` + `REAL_3D_SCENES` (set compartido). Si no
+     hay WebGL, `SceneBackdrop.tsx` nunca deja de mostrar su mock 2D — el
+     fallback de MP.md §21 sigue intacto.
+   - `Scene3D.tsx` (lazy, chunk aparte ~888KB/236KB gzip — no engorda el
+     bundle principal de 327KB) trae los 3 momentos: `OrganizingParticles`
+     (fibonacci-sphere, converge en 1.4s), `TransformationChain` (5 nodos +
+     segmentos que aparecen en secuencia), `ConnectionNetwork` (8 nodos/2
+     hubs con pulso, rotación lenta). Paleta: solo navy/gold reales.
+   - **El `<Canvas>` vive en `App.tsx`, NO en `SceneBackdrop.tsx`**, montado
+     una sola vez (persistente entre las 14 escenas) — bug real encontrado
+     y corregido en esta sesión: montarlo por escena (una implementación
+     intermedia, ya descartada) recreaba el contexto WebGL en cada
+     navegación y lo agotaba en pocos clics (`THREE.WebGLRenderer: Context
+     Lost` en consola, verificado). Si tocas el 3D, **no vuelvas a mover el
+     `<Canvas>` dentro de `SceneBackdrop`** — `frameloop` se controla vía
+     prop `active` (`'always'` solo en las 3 escenas, `'demand'` el resto).
+   - Verificado: 5 ciclos de navegación real (5→11→8→5→11→8→5→11→…) sin un
+     solo "Context Lost" ni error en consola tras el fix.
+5. **Pendiente ahora**: imágenes finales (`Docs/images_prompt.md`) — el
+   usuario las está generando externamente (Midjourney/similar, prompts ya
+   escritos) y avisará cuando estén listas para integrarlas. Tauri 2
+   (`.exe`/`.msi`) sigue sin empezar — **Rust/Cargo no está instalado en
+   esta máquina**, pedir confirmación explícita antes de instalarlo (cambio
+   de sistema). QA (MP.md §39 Fase 4) sin definir todavía.
 
 ## Git / remotes
 

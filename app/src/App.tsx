@@ -1,14 +1,31 @@
-import { useCallback, useEffect, useState } from 'react'
+import { Suspense, lazy, useCallback, useEffect, useMemo, useState } from 'react'
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion'
 import { scenes } from './scenes'
 import { SceneBackdrop } from './SceneBackdrop'
+import { REAL_3D_SCENES, hasWebGL } from './webgl'
+
+const Scene3D = lazy(() => import('./Scene3D').then((m) => ({ default: m.Scene3D })))
 
 // Navegación de teclado + indicador de progreso: ver MP.md §19 "Presentación
-// fullscreen". Placeholder de 3D (MP.md §21) queda pendiente — ver AGENTS.md.
+// fullscreen". 3D real (MP.md §21) en las 3 escenas de siempre — ver
+// AGENTS.md y el comentario sobre el <Canvas> persistente más abajo.
 function App() {
   const [index, setIndex] = useState(0)
   const reduceMotion = useReducedMotion()
   const last = scenes.length - 1
+  const scene = scenes[index]
+
+  // El <Canvas> de Scene3D vive aquí, fuera de AnimatePresence, y se monta
+  // UNA sola vez la primera vez que hace falta — nunca se desmonta después
+  // (aunque el usuario navegue a otra escena). Remontarlo por escena (como
+  // en un intento anterior) creaba un contexto WebGL nuevo cada vez y
+  // agotaba el límite del navegador en pocas navegaciones ("THREE.
+  // WebGLRenderer: Context Lost", visto en verificación 2026-09-07).
+  const [needs3D, setNeeds3D] = useState(false)
+  useEffect(() => {
+    if (!needs3D && REAL_3D_SCENES.has(scene.id) && hasWebGL()) setNeeds3D(true)
+  }, [scene.id, needs3D])
+  const active3DScene = useMemo(() => REAL_3D_SCENES.has(scene.id), [scene.id])
 
   const go = useCallback(
     (next: number) => setIndex((i) => Math.min(last, Math.max(0, typeof next === 'number' ? next : i))),
@@ -26,10 +43,13 @@ function App() {
     return () => window.removeEventListener('keydown', onKey)
   }, [index, go, last])
 
-  const scene = scenes[index]
-
   return (
     <div className="relative h-screen w-screen overflow-hidden bg-navy text-paper">
+      {needs3D && (
+        <Suspense fallback={null}>
+          <Scene3D sceneId={scene.id} reduceMotion={Boolean(reduceMotion)} active={active3DScene} />
+        </Suspense>
+      )}
       <AnimatePresence mode="wait">
         <motion.section
           key={scene.id}

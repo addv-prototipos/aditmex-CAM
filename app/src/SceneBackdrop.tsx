@@ -5,9 +5,20 @@
  * de partículas ligero. Las imágenes finales de Docs/images_prompt.md
  * llegan después del gate de MP.md §0.9 (Fase 3) — esto es composición,
  * no arte final.
+ *
+ * Fase 3 (gate aprobado 2026-09-07): las 3 escenas de MP.md §21 (aditmex/
+ * siguiente-nivel/michoacan) ahora intentan 3D real (`Scene3D.tsx`, React
+ * Three Fiber) — pero el <Canvas> vive en App.tsx, montado una sola vez y
+ * persistente entre escenas (ver nota ahí: remontarlo por escena agotaba
+ * el límite de contextos WebGL del navegador tras pocas navegaciones —
+ * "THREE.WebGLRenderer: Context Lost" — inaceptable en una presentación
+ * en vivo). Este archivo solo decide si debe *ceder* su mock 2D para
+ * dejar ver el canvas de atrás (`hasWebGL()` true) o mostrarlo siempre
+ * (fallback obligatorio de MP.md §21 si no hay WebGL).
  */
-import { useEffect, useRef } from 'react'
+import { useEffect, useMemo, useRef } from 'react'
 import type { Scene } from './scenes'
+import { REAL_3D_SCENES, hasWebGL } from './webgl'
 
 /**
  * `organize`: mock del 3D #1 de MP.md §21 ("partículas/materias primas que
@@ -256,7 +267,7 @@ function GuideLines() {
   )
 }
 
-export function SceneBackdrop({
+function Legacy2DContent({
   treatment,
   reduceMotion,
   sceneId,
@@ -266,32 +277,32 @@ export function SceneBackdrop({
   sceneId: string
 }) {
   return (
+    <>
+      {treatment === 'retrato' && <Particles reduceMotion={reduceMotion} organize={sceneId === 'aditmex'} />}
+      {treatment === 'cadena' && <ChainLines stagger={sceneId === 'siguiente-nivel'} />}
+      {treatment === 'red' && <NetworkGraph />}
+      {treatment === 'lista' && <GuideLines />}
+    </>
+  )
+}
+
+export function SceneBackdrop({
+  treatment,
+  reduceMotion,
+  sceneId,
+}: {
+  treatment: Scene['treatment']
+  reduceMotion: boolean
+  sceneId: string
+}) {
+  // El canvas 3D persistente de App.tsx ya se ve por detrás — solo hace
+  // falta no dibujar el mock 2D encima cuando aplica.
+  const rendersOnGlobalCanvas = useMemo(() => REAL_3D_SCENES.has(sceneId) && hasWebGL(), [sceneId])
+
+  return (
     <div className="absolute inset-0 z-0 overflow-hidden">
-      {treatment === 'retrato' && (
-        <>
-          <Vignette strength="strong" />
-          <Particles reduceMotion={reduceMotion} organize={sceneId === 'aditmex'} />
-        </>
-      )}
-      {treatment === 'cadena' && (
-        <>
-          <Vignette strength="soft" />
-          <ChainLines stagger={sceneId === 'siguiente-nivel'} />
-        </>
-      )}
-      {treatment === 'red' && (
-        <>
-          <Vignette strength="soft" />
-          <NetworkGraph />
-        </>
-      )}
-      {treatment === 'lista' && (
-        <>
-          <Vignette strength="soft" />
-          <GuideLines />
-        </>
-      )}
-      {treatment === 'base' && <Vignette strength="soft" />}
+      <Vignette strength={treatment === 'retrato' ? 'strong' : 'soft'} />
+      {!rendersOnGlobalCanvas && <Legacy2DContent treatment={treatment} reduceMotion={reduceMotion} sceneId={sceneId} />}
     </div>
   )
 }

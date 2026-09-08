@@ -182,3 +182,27 @@ Servidor de desarrollo detenido por PID específico (`Stop-Process -Id`), no por
 **Implementado**: `app/AGENTS.md` actualizado (mock 3D pasa de "hecho, verificación pendiente" a "hecho y verificado visualmente", con el detalle de qué se comprobó). `project_state.md` actualizado (mueve el ítem de "falta/pendiente" a "cerrado", agrega entrada nueva).
 
 **Pendiente**: **gate de aprobación humana (MP.md §0.9)** — sigue sin iniciarse Fase 3 (3D real con Three Fiber, imágenes finales, Tauri). No avanzar sin que el usuario diga algo equivalente a "aprobado"/"continúa"/"construye la versión final".
+
+---
+
+## 2026-09-07 — Fase 3: gate aprobado, 3D real implementado y verificado
+
+**Pedido**: "apruebo, sigue a Fase 3" — luz verde explícita al gate de MP.md §0.9, tras ver el prototipo abierto en el navegador.
+
+**Analizado antes de tocar código**: se revisaron los 2 tracks de Fase 3 con bloqueos potenciales. Hallazgos: (1) Rust/Cargo no está instalado en esta máquina (`rustc`/`cargo` no encontrados) → Tauri no puede compilar `.exe`/`.msi` sin ese toolchain; instalarlo es cambio de sistema, requiere confirmación. (2) No hay generador de imágenes disponible en este entorno → no se pueden producir los 14 `.webp` de `Docs/images_prompt.md`. Se presentaron ambos bloqueos al usuario con `AskUserQuestion` antes de asumir ningún camino.
+
+**Decidido por el usuario**: (1) 3D real ahora, imágenes y Tauri se resuelven aparte — no bloquear el 3D por los otros 2 pendientes. (2) Imágenes: el usuario las genera externamente con los prompts ya escritos en `images_prompt.md` y avisa cuando estén listas para integrarlas — no placeholder, no stock.
+
+**Propuesta** (texto, confirmada antes de implementar): 3 momentos 3D reales con React Three Fiber (ya instalado desde la sesión del mock) fieles a MP.md §21 — partículas 3D convergiendo en clúster (`aditmex`), cadena de nodos 3D con segmentos que aparecen en secuencia (`siguiente-nivel`), grafo 3D con hubs pulsantes y rotación lenta (`michoacan`). Reglas técnicas explícitas en la propuesta: un solo canvas, fallback 2D obligatorio si no hay WebGL, `prefers-reduced-motion` respetado, tope bajo de instancias. Usuario: "si adelante".
+
+**Implementado**:
+- `app/src/webgl.ts` (nuevo): `hasWebGL()` + `REAL_3D_SCENES` (set compartido `aditmex`/`siguiente-nivel`/`michoacan`).
+- `app/src/Scene3D.tsx` (nuevo): `OrganizingParticles` (60 partículas en distribución fibonacci-sphere, convergen en 1.4s ease-out, jitter determinista después), `TransformationChain` (5 nodos + 4 segmentos de línea que aparecen en secuencia, delay escalonado 180ms), `ConnectionNetwork` (8 nodos/2 hubs sobre la misma topología del mock 2D, pulso sinusoidal en hubs, rotación lenta del grupo). Solo paleta navy/gold real, sin colores nuevos.
+- `app/src/SceneBackdrop.tsx`: refactor — `Legacy2DContent` extrae el switch de tratamientos 2D para reutilizarse como fallback; `Vignette` ahora se renderiza siempre (antes solo dentro de cada rama), para que no desaparezca al mostrar 3D.
+- `app/src/App.tsx`: import perezoso de `Scene3D` con `React.lazy`.
+
+**Bug real encontrado en verificación (no cosmético, se corrigió antes de cerrar)**: la primera versión montaba el `<Canvas>` dentro de `SceneBackdrop.tsx`, que se desmonta/remonta con cada cambio de escena vía `AnimatePresence`. Al navegar 5→8→11 unas pocas veces apareció `THREE.WebGLRenderer: Context Lost` en consola y el canvas dejó de dibujar — cada navegación creaba un contexto WebGL nuevo sin dar tiempo a liberar el anterior, agotando el límite del navegador. Se diagnosticó leyendo la consola completa (no solo buscando el error esperado) tras notar contenido "en blanco" donde debían verse partículas/red. **Fix**: el `<Canvas>` se movió a `App.tsx`, se monta una sola vez la primera vez que hace falta (`needs3D` en estado, nunca vuelve a `false`) y no se desmonta al cambiar de escena — solo cambia qué contenido dibuja según `scene.id`. `frameloop` alterna `'always'`/`'demand'` vía prop `active` para no gastar ciclos en las otras 11 escenas sin necesidad de destruir el contexto.
+
+**Verificado**: `tsc --noEmit` y `npm run build` limpios en cada iteración (chunk de `Scene3D` separado, ~888KB/236KB gzip, bundle principal sin crecer). En navegador: las 3 escenas renderizan correctamente (capturas confirman clúster de partículas, cadena de 5 nodos, red de 8 nodos/2 hubs), 5 ciclos completos de navegación a ritmo real (clic con ~1s de espera entre cada uno, no `repeat` de teclas) sin un solo error ni "Context Lost" tras el fix. Nota de proceso: las herramientas `get_page_text`/accesibilidad devolvieron contenido textual desactualizado (stale) un par de veces durante la sesión mientras el screenshot y el DOM real ya mostraban el estado correcto — se resolvió confiando en el screenshot como fuente de verdad cuando hay discrepancia.
+
+**Pendiente**: imágenes finales (el usuario avisa cuando las tenga listas), Tauri (bloqueado por falta de Rust — pedir confirmación antes de instalar), QA de MP.md §39 Fase 4 sin definir alcance todavía.
