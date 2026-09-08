@@ -78,3 +78,23 @@ Registro comprimido de la conversación del proyecto bajo el protocolo `addv-web
 - Mensaje predefinido de WhatsApp actualizado (ya no dice "cotizar materias primas para panificación").
 
 **Verificación visual**: la extensión Claude-in-Chrome se desconectó a mitad de la sesión anterior; el usuario la reinició y pidió revisar. Se verificó en navegador sección por sección (hero, quiénes somos, cómo trabajamos, segmentos, portafolio técnico con tabs, resultados, CTA final, footer) — sin roturas de layout, contraste correcto, tipografía Montserrat/Geist cargando bien, copy nuevo legible en todas las secciones.
+
+---
+
+## 2026-09-07 — Ruflo configurado + arranque de `/app` (MP.md, Fase 1-2)
+
+**Contexto**: tras el commit+push del `index.html` realineado, el usuario pidió (1) "configura ruflo como en D:\srv\portalFac" y, en el mismo tramo de conversación, (2) continuar con el plan grande de `MP.md` — confirmó explícitamente "carpeta /app aparte, index.html de raíz queda intacto" y pidió documentar para que **OpenCode** (modelo declarado por el usuario: "muse spark 1.2", no reconocido — se documentó la incertidumbre en vez de asumir capacidades) pueda continuar con la misma calidad.
+
+**Ruflo**: inspeccionado `D:\srv\portalFac` (`.mcp.json`, `.claude/settings.json`, `.gitignore`) para replicar solo la parte de *configuración declarativa* — se excluyó a propósito el estado en vivo (`.claude-flow/` runtime, `.swarm/memory.db`, logs, sesiones) por ser historial de OTRO proyecto, no portable, y el servidor MCP `idea` (JetBrains, específico de esa máquina/proyecto). Replicado en la raíz de `adtmex_ventas`: `.mcp.json` (servidor `claude-flow`, `autoStart:false`, topología mesh, 5 agentes) + `.claude/settings.json` (mismo bloque `claudeFlow`). Confirmado que en `portalFac` estos archivos están en `.gitignore` (no se commitean, configuración por máquina) — mismo criterio aplicado aquí, `.gitignore` actualizado.
+
+**`/app` — decisión de arquitectura confirmada por el usuario**: proyecto nuevo, separado, no toca el `index.html` de raíz (ese sigue siendo el sitio real de la reunión del 2026-09-08). Antes de esto se preguntó explícitamente si el build grande debía arrancar ya sabiendo que se entrega después de la reunión, o si había que recortar alcance para tener algo listo antes — el usuario eligió **arrancar ya, entrega post-reunión**, sin presión de fecha.
+
+**Implementado**:
+- Scaffold Vite + React + TypeScript en `/app`, Tailwind v4 (`@tailwindcss/vite`, tokens de marca reales en `@theme`), Framer Motion, `three`/`@react-three/fiber`/`@react-three/drei` instalados (sin usar todavía — reservados para los 3 momentos 3D de `MP.md` §21), `lucide-react`.
+- Fuentes Montserrat/Geist reales autohospedadas en `src/assets/fonts/` (no CDN — requisito de `MP.md` §18: la app final debe correr offline en Tauri).
+- `vite.config.ts` con `base:'./'` (requisito para servir desde `file://` dentro de Tauri).
+- `App.tsx` + `scenes.tsx`: shell de presentación fullscreen, navegación por teclado (flechas/espacio/home/end), indicador de progreso discreto, transiciones con Framer Motion, `prefers-reduced-motion` respetado. 5 de las 14 escenas de `MP.md` §12 con copy literal (portada, contexto, oportunidad, problema invisible, quién es ADITMEX) — nada inventado.
+- Verificado: `tsc --noEmit` limpio, `npm run build` limpio (offline, sin fetch externo), probado en navegador (`npm run dev`) — navegación por teclado funcional, contraste real correcto (confirmado con zoom, el gris que se veía en el screenshot era compresión JPEG, no un bug real).
+- `app/AGENTS.md` (para OpenCode) + `app/CLAUDE.md` (apunta a AGENTS.md, sin duplicar): diagnóstico completo, identidad visual, stack y decisiones, qué existe, qué sigue en orden, y el recordatorio explícito del gate de aprobación humana de `MP.md` §0.9 antes de Fase 3 (3D real, imágenes finales, Tauri).
+
+**Pendiente**: escenas 6-14, sistema visual completo por escena, mock 3D (placeholder, no Three.js real todavía), y **detenerse en el gate** antes de construir nada de Fase 3 sin aprobación explícita del usuario.

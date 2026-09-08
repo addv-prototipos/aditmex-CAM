@@ -1,0 +1,94 @@
+@import "tailwindcss";
+
+/* ============================================================
+   Fuentes reales ADITMEX — autohospedadas (offline, requisito
+   Tauri: la app final no depende de internet). Extraídas de
+   aditmex.com.mx, ver /AGENTS.md "Identidad visual".
+   ============================================================ */
+@font-face {
+  font-family: "Montserrat";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("./assets/fonts/montserrat-400.ttf") format("truetype");
+}
+@font-face {
+  font-family: "Montserrat";
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url("./assets/fonts/montserrat-600.ttf") format("truetype");
+}
+@font-face {
+  font-family: "Montserrat";
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("./assets/fonts/montserrat-700.ttf") format("truetype");
+}
+@font-face {
+  font-family: "Montserrat";
+  font-style: normal;
+  font-weight: 800;
+  font-display: swap;
+  src: url("./assets/fonts/montserrat-800.ttf") format("truetype");
+}
+@font-face {
+  font-family: "Geist";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("./assets/fonts/geist-400.ttf") format("truetype");
+}
+@font-face {
+  font-family: "Geist";
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url("./assets/fonts/geist-500.ttf") format("truetype");
+}
+@font-face {
+  font-family: "Geist";
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url("./assets/fonts/geist-600.ttf") format("truetype");
+}
+
+@theme {
+  /* Identidad real ADITMEX — extraída de aditmex.com.mx, no estimada.
+     Ver /AGENTS.md para la fuente y fecha de extracción. */
+  --color-navy: #27274d;
+  --color-navy-deep: #1a1a2e;
+  --color-navy-mid: #3d3d70;
+  --color-gold: #c4ac4d;
+  --color-gold-light: #d4be6d;
+  --color-paper: #ffffff;
+  --color-mist: #f8f8f8;
+  --color-line: #e5e7eb;
+  --color-muted: #6b7280;
+
+  --font-display: "Montserrat", sans-serif;
+  --font-body: "Geist", sans-serif;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+body {
+  font-family: var(--font-body);
+  background: var(--color-navy);
+  color: var(--color-paper);
+  overflow: hidden;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

@@ -10,3 +10,14 @@ Thumbs.db
 # Logs
 *.log
 npm-debug.log*
+
+# Node (proyecto /app)
+node_modules/
+
+# Ruflo — config/estado local del entorno, no del sitio (mismo criterio
+# que D:\srv\portalFac). No se commitea: cada máquina se configura aparte.
+.claude/
+.claude-flow/
+.agents/
+.mcp.json
+.swarm/

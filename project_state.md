@@ -16,8 +16,8 @@ Nada activo ahora mismo — se acaba de cerrar el segmento de creación de docs 
 
 ## Falta / pendiente
 
-- **Docker**: el protocolo exige "Docker siempre" pero el sitio no tiene contenedorización todavía. No implementado — pendiente de que el usuario confirme si quiere levantarlo (nginx sirviendo estático sería la opción más simple).
-- **Rediseño mayor (`Docs/MP.md`)**: existe un prompt maestro que pide reconstruir todo el sitio como app React/Vite/Tailwind/Three.js empaquetada con Tauri (.exe/.msi) — 8 etapas con gates de aprobación. **No iniciado.** Conflicto de calendario detectado y señalado al usuario: la reunión con el Consejo es el 2026-09-08 (día siguiente a esta sesión), incompatible con un rediseño de esa magnitud en el tiempo disponible. A la espera de que el usuario decida si se ejecuta MP.md completo (post-reunión) o se sigue iterando sobre el `index.html` estático actual.
+- **Docker**: el protocolo exige "Docker siempre" pero el sitio estático raíz no tiene contenedorización todavía. No implementado.
+- **Rediseño mayor (`Docs/MP.md`) — EN PROGRESO en `/app`**: proyecto Vite+React+TS+Tailwind aparte (no toca el `index.html` de raíz). Confirmado con el usuario: arranca ahora, entrega prevista después de la reunión del 2026-09-08 (no hay presión de fecha). Estado: Fase 1 (auditoría/diagnóstico) hecha, Fase 2 (prototipo) parcial — 5 de 14 escenas con copy real de `MP.md`, sistema de tokens real aplicado, fuentes autohospedadas (offline), navegación por teclado + indicador de progreso, build y typecheck verificados, probado en navegador. Gate de aprobación humana pendiente antes de Fase 3 (3D real, imágenes finales, Tauri) — ver `app/AGENTS.md` para el detalle completo y qué sigue. Documentado en `app/AGENTS.md` + `app/CLAUDE.md` para que otro agente (el usuario mencionó usar OpenCode) pueda continuar sin perder contexto.
 - **Pruebas**: no hay pruebas unitarias ni funcionales todavía. Para un sitio estático sin lógica de negocio compleja, el piso mínimo razonable sería smoke test (build/lint HTML, verificación de enlaces/imágenes rotos, chequeo de accesibilidad) — no implementado, pendiente de definir alcance con el usuario.
 - **`.idea/`** sin trackear — carpeta de configuración de IDE (JetBrains). No se ha decidido si debe ir a `.gitignore` o si el usuario la quiere trackeada.
 - Sin `.gitignore` en el repo.
@@ -29,6 +29,8 @@ Nada activo ahora mismo — se acaba de cerrar el segmento de creación de docs 
 - PDFs duplicados eliminados: `Docs/Brief.pdf` y `Docs/Guia_Estudio_ADITMEX_Consejo_Agroalimentario_Michoacan-1.pdf` (quedan solo sus versiones `.md`).
 - **Identidad de marca real aplicada a `index.html`**: paleta y tipografía extraídas en vivo del CSS de `aditmex.com.mx` (07 sep 2026) — `#27274D` marino (`--primary`), `#C4AC4D` dorado (`--accent`), Montserrat (headings) + Geist/Geist Mono (cuerpo/mono). Reemplaza la paleta placeholder (teal/ámbar/Fraunces) que antes estaba marcada como "no verificada". Verificado visualmente en navegador (servidor local), sin regresiones.
 - `Docs/images_prompt.md` ampliado con sección `IDENTIDAD DE MARCA` (ID-01 logo revectorizado, ID-02 textura de marca) separada de las 12 escenas narrativas — usa exclusivamente los 2 hex reales.
+- **Ruflo configurado** (local, no commiteado — mismo criterio que `D:\srv\portalFac`): `.mcp.json` (servidor `claude-flow`, `autoStart:false`) + `.claude/settings.json` (topología mesh, 5 agentes máx., memoria en RAM) calcados de `portalFac`. `.gitignore` actualizado para excluir `.claude/`, `.claude-flow/`, `.agents/`, `.mcp.json`, `.swarm/`, `node_modules/`.
+- **Scaffold `/app` iniciado** (ver arriba, sección "Rediseño mayor").
 
 ## Decisiones ya tomadas
 

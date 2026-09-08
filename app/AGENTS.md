@@ -1,0 +1,166 @@
+# AGENTS.md — contexto operativo para continuar este build
+
+Este archivo existe para que cualquier agente (Claude Code, OpenCode con
+cualquier modelo, humano) retome este proyecto sin tener que rehacer el
+diagnóstico ni repetir preguntas ya resueltas. Léelo completo antes de tocar
+código.
+
+**Nota de origen**: este proyecto lo empezó Claude Code (Claude Sonnet 5) el
+2026-09-07 siguiendo el flujo de la skill `addv-web-app` (ver `../CLAUDE.md`
+en la raíz del repo) y el prompt maestro `../Docs/MP.md`. Si continúas con
+otro modelo (el dueño del proyecto mencionó "muse spark 1.2" — no es un
+modelo que yo reconozca en mi conocimiento, así que no asumas capacidades
+específicas de él; verifica lo básico — soporte de TypeScript/JSX, tool use,
+contexto largo — antes de asumir que puede seguir el mismo flujo agentic sin
+ajustes), aplica el mismo rigor: no inventes datos de marca, no saltes el
+gate de aprobación humana, no reemplaces el `index.html` de la raíz del
+repo (es el sitio ya en producción, usado en la reunión del 2026-09-08 con
+el Consejo Agroalimentario de Michoacán — intocable, vive fuera de `/app`).
+
+## Qué es esto, dónde vive
+
+- `/app` (esta carpeta) = proyecto nuevo, aparte, Vite + React + TS + Tailwind.
+  Es la "experiencia ejecutiva inmersiva" que pide `Docs/MP.md` — la versión
+  grande con 3D/Tauri, NO el sitio de la reunión de mañana.
+- `/index.html` (raíz del repo, un directorio arriba) = sitio estático ya
+  en producción, ya realineado a la posición del Consejo, ya verificado
+  visualmente. **No lo toques desde aquí.** Referencia de identidad de marca
+  ya aplicada (paleta/tipografía reales), pero es un proyecto separado.
+- `/Docs/MP.md` = prompt maestro completo (46 secciones) que define todo el
+  alcance del build grande. Este AGENTS.md es un resumen operativo, no lo
+  reemplaza — si algo no está claro aquí, la respuesta completa está ahí.
+- `/Docs/Brief.md`, `/Docs/GuiaEstudio_Aditmex.md` = fuente de verdad del
+  negocio (posicionamiento, mensajes, lo que NO se debe decir).
+- `/Docs/images_prompt.md` = prompts de imágenes (12 escenas narrativas +
+  2 de identidad de marca). Ninguna imagen final generada todavía.
+- `/addv/cmem.md` (raíz del repo) = historial comprimido de decisiones de
+  todo el proyecto (incluye el trabajo en `/app`). Léelo si necesitas
+  contexto de *por qué* se decidió algo.
+
+## Diagnóstico (Fase 1 de MP.md, ya hecho — no lo repitas)
+
+**Consejo Agroalimentario de Michoacán**: articula la cadena completa
+(primario → transformación → industria alimenticia → gourmet/restaurantero).
+Prioridades reales: innovación, valor agregado, conexiones estratégicas,
+capacitación. Presidente: Carlos Ochoa Arceo (confirmado, fuentes SEDECO y
+prensa 2026 — ver búsqueda registrada en `addv/cmem.md`).
+
+**ADITMEX real** (extraído en vivo de aditmex.com.mx, 2026-09-07, no
+estimado): comercializadora 10+ años, 4 sectores (alimentos/aromas/
+cosmética/industrial), marcas aliadas reales — Ensign, RZBC, Fufeng,
+Wannianhuo, Altrafine Gums, BASF. Identidad: marino `#27274D` + dorado
+`#C4AC4D`, Montserrat (headings) + Geist (cuerpo).
+
+**Gap / posicionamiento**: el Consejo quiere mover la cadena de "materia
+prima" a "producto con valor agregado". ADITMEX puede ocupar ese espacio a
+nivel ingrediente — no como distribuidor, como **puente técnico**.
+Hipótesis (concepto, no tagline literal): *"ADITMEX como infraestructura de
+ingredientes para la innovación alimentaria local."*
+
+**Regla de oro** (MP.md §37, no negociable): nunca inventar certificaciones,
+laboratorios, clientes, cifras, exclusividad o cobertura que no estén en
+`Docs/Brief.md` / `Docs/GuiaEstudio_Aditmex.md`. Si falta un dato, se
+diseña el concepto sin afirmarlo como hecho — no se rellena con algo
+plausible.
+
+## Identidad visual (ya implementada en `src/index.css`)
+
+```
+--color-navy:       #27274D   (fondo principal, --primary real del sitio)
+--color-navy-deep:  #1A1A2E
+--color-navy-mid:   #3D3D70
+--color-gold:       #C4AC4D   (único acento real de marca)
+--color-gold-light: #D4BE6D
+--color-paper:      #FFFFFF
+--font-display: Montserrat (headings)
+--font-body:    Geist (cuerpo/UI)
+```
+
+Fuentes autohospedadas en `src/assets/fonts/*.ttf` (Montserrat 400/600/700/
+800, Geist 400/500/600) — **no** hay `<link>` a Google Fonts. Es intencional:
+la app final corre offline dentro de Tauri (MP.md §18 — "no requerir
+internet"). Si necesitas más pesos, descárgalos y agrégalos igual, no uses
+un CDN.
+
+## Stack y decisiones ya tomadas
+
+- Vite + React + TypeScript (`npm create vite -- --template react-ts`).
+- Tailwind v4 vía `@tailwindcss/vite` — tokens de marca en `@theme` dentro
+  de `src/index.css`, no en un `tailwind.config.js` (v4 no lo requiere).
+- `vite.config.ts` tiene `base: './'` — **no lo cambies a `/`**. Es requisito
+  para que el build final se sirva como archivo local dentro de Tauri
+  (`file://`), no desde la raíz de un dominio.
+- Framer Motion para transiciones (ya en uso en `App.tsx`).
+- Instalado pero **sin usar todavía**: `three`, `@react-three/fiber`,
+  `@react-three/drei` — para los 3 momentos 3D (ver abajo). No los integres
+  a la ligera; MP.md §21 es explícito: máximo 2–3 momentos memorables, el
+  resto de la app es CSS/SVG/Framer Motion.
+- `lucide-react` instalado, sin usar todavía (iconografía cuando haga falta).
+- Todo respeta `prefers-reduced-motion` — ver `useReducedMotion()` en
+  `App.tsx` y el media query global en `index.css`. Cualquier animación
+  nueva debe seguir el mismo patrón.
+
+## Qué existe ahora mismo (Fase 2 de MP.md — prototipo parcial)
+
+`src/App.tsx` + `src/scenes.tsx`: shell de presentación de pantalla
+completa, navegación por teclado (`←/→/Space/Home/End`), indicador de
+progreso discreto (puntos, sin navbar tradicional — MP.md §30), transición
+entre escenas con Framer Motion. **5 de las 14 escenas de MP.md §12**, con
+texto literal (no inventado):
+
+1. Portada — "ADITMEX" / "Materias primas que abren posibilidades."
+2. El contexto — "Michoacán produce." / "El valor no termina en la cosecha."
+3. La oportunidad — cadena materia prima → transformación → producto →
+   valor agregado → mercado
+4. El problema invisible — "A veces, crecer no requiere una idea nueva. /
+   Requiere encontrar la solución correcta."
+5. Quién es ADITMEX — "El aliado detrás del ingrediente."
+
+Verificado: `tsc --noEmit` limpio, `npm run build` limpio, probado en
+navegador (teclado, click en indicador de progreso, contraste real).
+
+## Qué sigue (en orden)
+
+1. **Escenas 06–14** (MP.md §12, mismo patrón que las 5 existentes — agrega
+   objetos a `scenes.tsx`): qué hacemos (sistema), portafolio como
+   soluciones, del producto actual al siguiente nivel, confianza (ADITMEX
+   Standard), servicio, Michoacán, visión, cierre, CTA final. Copy ya
+   redactado en MP.md, cópialo — no lo reinventes salvo que el usuario pida
+   ajustarlo.
+2. **Sistema visual completo**: hoy solo hay tipografía + color. Falta
+   composición por escena (media, negative space, jerarquía) — usar
+   `Docs/images_prompt.md` como guía de qué imagen va en cada escena
+   (todavía son placeholders/mocks, no imágenes finales generadas).
+3. **Mock 3D** (MP.md §22): antes de integrar Three.js real, un placeholder
+   (gradiente animado, canvas de partículas simple como el que ya existe en
+   el `index.html` de raíz) es suficiente para que el prototipo sea
+   revisable.
+4. **GATE DE APROBACIÓN HUMANA** (MP.md §0.9): al completar el prototipo
+   con mocks, preséntalo y **detente**. No sigas con imágenes finales, 3D
+   real, Tauri ni empaquetado sin que el usuario diga algo equivalente a
+   "aprobado" / "continúa" / "construye la versión final" (MP.md §0.10 —
+   "se ve bien" o "me gusta" NO cuenta como luz verde).
+5. Después del gate: 3 momentos 3D reales con React Three Fiber (partículas
+   organizándose / cadena materia-prima→ingrediente→producto / red de
+   conexión productores-ingredientes-mercado), imágenes finales desde
+   `Docs/images_prompt.md`, Tauri 2 para `.exe`/`.msi`, QA (MP.md §39 Fase 4).
+
+## Comandos
+
+```bash
+npm install
+npm run dev      # http://localhost:5173 (o el puerto libre siguiente)
+npm run build    # tsc -b && vite build -> dist/
+npm run preview  # sirve dist/ para probar el build de producción
+```
+
+Tauri aún no está configurado (llega en la fase posterior al gate). Cuando
+se agregue: `npm run tauri:dev`, `npm run tauri:build` — documentar aquí en
+cuanto exista.
+
+## Reglas de lenguaje (MP.md §0.14, aplican a TODO el copy nuevo)
+
+Evitar: "somos los mejores", "líderes", "nadie hace esto", "garantizamos",
+"revolucionamos". Preferir: "acompañamos", "ayudamos a identificar",
+"buscamos alternativas", "trabajamos para resolver". Público ejecutivo, una
+idea por pantalla, sin párrafos largos.
