@@ -132,16 +132,23 @@ function Particles({ reduceMotion, organize = false }: { reduceMotion: boolean; 
  * Solo en escenas sin 3D real (ver nota en scenes.tsx) — object-cover a
  * pantalla completa, primer plano oscurecido con `PhotoScrim` para que el
  * texto (izquierda) tenga contraste garantizado sin depender del
- * contenido de la foto. `eager` únicamente en `portada` (LCP).
+ * contenido de la foto.
+ *
+ * Rendimiento 2026-09-08: todas eager + async decoding + preload global
+ * en App.tsx. La transición Framer es 700ms; si la imagen aún no está en
+ * caché, el decode bloquea el hilo y la navegación se percibe como
+ * "congelada" (bug 7s/45s reportado). Con 1.1MB totales tras optimización
+ * (1280px, q72) es más barato precargar que dejar `lazy` por escena.
  */
-function SceneImage({ src, eager }: { src: string; eager?: boolean }) {
+function SceneImage({ src }: { src: string }) {
   return (
     <img
       src={src}
       alt=""
       className="absolute inset-0 h-full w-full object-cover"
-      loading={eager ? 'eager' : 'lazy'}
+      loading="eager"
       decoding="async"
+      draggable={false}
     />
   )
 }
@@ -336,7 +343,7 @@ export function SceneBackdrop({
     <div className="absolute inset-0 z-0 overflow-hidden">
       {image && (
         <>
-          <SceneImage src={image} eager={sceneId === 'portada'} />
+          <SceneImage src={image} />
           <PhotoScrim />
         </>
       )}

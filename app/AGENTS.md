@@ -8,7 +8,7 @@ código.
 **Nota de origen**: este proyecto lo empezó Claude Code (Claude Sonnet 5) el
 2026-09-07 siguiendo el flujo de la skill `addv-web-app` (ver `../CLAUDE.md`
 en la raíz del repo) y el prompt maestro `../Docs/MP.md`. Estado al
-2026-09-07 (cierre de sesión, pausada a media tarea por el usuario — ver
+2026-09-08 (optimización imágenes + fix rendimiento, por el usuario — ver
 recuadro abajo): **Fase 2 completa**, gate de MP.md §0.9 **aprobado**, 3D
 real hecho y verificado, imágenes finales recibidas/corregidas e
 **integradas en código pero SIN COMMITEAR** (`git status` marcará
@@ -23,7 +23,7 @@ no lo pierdas ni lo reviertas). Tauri sin empezar (falta Rust).
 > prueba con un script JS hizo que Chrome reportara "renderer may be
 > frozen or unresponsive" tras 45s). El usuario dijo "pausa" antes de
 > diagnosticarlo a fondo — **no se llegó a una causa raíz confirmada, ni
-> se commiteó nada de esto**. Tu primer trabajo, en este orden:
+> se commiteó nada de esto**. Fix aplicado 2026-09-08 (ver punto 5). Verifica navegando escena por escena. Tu trabajo:
 > 1. Lee el punto 5 de "Qué sigue" completo antes de tocar nada.
 > 2. Reproduce el problema tú mismo (pasos ahí) para confirmar que sigue
 >    ocurriendo — no asumas que ya está diagnosticado.

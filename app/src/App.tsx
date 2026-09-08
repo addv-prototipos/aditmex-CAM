@@ -27,6 +27,18 @@ function App() {
   }, [scene.id, needs3D])
   const active3DScene = useMemo(() => REAL_3D_SCENES.has(scene.id), [scene.id])
 
+  // Precarga de fotos (2026-09-08): evita el decode bloqueante durante la
+  // transición de 700ms que causó el "renderer frozen 45s" reportado.
+  // Con imágenes ya optimizadas a 1280px/q72 (~1.1MB totales) el costo es mínimo.
+  useEffect(() => {
+    scenes.forEach((s) => {
+      if (!s.image) return
+      const img = new window.Image()
+      img.decoding = 'async'
+      img.src = s.image
+    })
+  }, [])
+
   const go = useCallback(
     (next: number) => setIndex((i) => Math.min(last, Math.max(0, typeof next === 'number' ? next : i))),
     [last],

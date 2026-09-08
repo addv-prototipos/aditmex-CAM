@@ -257,3 +257,17 @@ Al revisar también los 2 assets de marca (ID-01/ID-02) se encontraron en `asset
 **Estado al pausar**: `app/src/App.tsx`, `app/src/SceneBackdrop.tsx`, `app/src/scenes.tsx` modificados y **sin commitear** — a propósito, no se quiere dar por bueno un trabajo con un bug de rendimiento real sin resolver. Server de dev (`npm run dev`, puerto 5173) y pestaña de Chrome se quedaron abiertos.
 
 **Pendiente para quien continúe** (documentado en detalle en `app/AGENTS.md`, sección "ARRANCA AQUÍ" y punto 5 de "Qué sigue"): reproducir el problema con clicks reales (no script), aislar la causa, arreglarla, re-verificar las 14 escenas de punta a punta, y solo entonces commitear.
+
+---
+
+## 2026-09-08 -- Optimizacion de imagenes y fix rendimiento
+
+**Pedido**: optimiza las imagenes y continua donde se quedo claude + deploy con github actions activo.
+
+**Implementado**:
+- Imagenes: Pillow 1672->1280 q90->q72: 3.16MB -> 1.15MB (~63% ahorro). Logo 395KB -> 96KB.
+- Codigo: SceneBackdrop.tsx eager siempre + decoding async; App.tsx precarga todas via new Image().
+- Verificado: tsc/build/preview OK (200), dist/images copiado.
+- Docs: project_state.md y app/AGENTS.md actualizados.
+
+**Pendiente**: verificacion final navegando 14 escenas con clicks reales.
