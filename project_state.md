@@ -4,25 +4,23 @@ Estado del proyecto `adtmex_ventas` bajo el protocolo `addv-web-app`. Última ac
 
 ## Qué existe
 
-- `index.html` (908 líneas) — sitio de una página, HTML+CSS+JS inline, sin dependencias de build. Presentación de ventas de ADITMEX para reunión con el Consejo Agroalimentario de Michoacán (8 sep 2026).
-- `assets/images/{backgrounds,hero,products,segments}/` — imágenes del sitio.
-- `Docs/` (sin trackear en git) — `Brief.md`/`Brief.pdf` (briefing ejecutivo de la reunión), `GuiaEstudio_Aditmex.md`/`Guia_Estudio_ADITMEX_Consejo_Agroalimentario_Michoacan-1.pdf`, `Nuevo Documento de texto.txt`.
-- `/app` — prototipo Vite+React+TS+Tailwind del rediseño mayor de `Docs/MP.md`, separado del `index.html` de raíz. **14/14 escenas** con copy real de `MP.md` mergeadas, `tsc --noEmit` y `npm run build` limpios, verificado en navegador escena por escena (contenido, contador, dots, sin errores de consola). Helpers de Ruflo copiados a `app/.claude/helpers/` (no trackeados en git, config por máquina).
+- `index.html` (908 líneas) — sitio raíz estático (HTML+CSS+JS inline) para reunión CAM 2026-09-08, paleta real `#27274D`/`#C4AC4D` + Montserrat/Geist ya aplicadas.
+- `assets/images/{backgrounds,hero,products,segments}/` — imágenes del sitio raíz.
+- `Docs/` — `Brief.md`, `GuiaEstudio_Aditmex.md`, `MP.md`, `images_prompt.md`, `Guion_Presentacion_ADITMEX_CAM_2026-09-08.pdf` (guion 14 escenas + frase neuroventas).
+- `/app` — Vite+React+TS+Tailwind+Three.js, 14/14 escenas MP.md, sistema visual (retrato/cadena/lista/red/base), 3D real con fallback WebGL, **14/14 con imagen** (12 narrativas + brand texture + agro-texture, todas de `images_prompt.md`) optimizadas 1280px/q72 (~1.2MB). `app/public/brand/aditmex-logo-refined.png` + `app/src-tauri/` (Tauri 2.11). **Playwright** 7 tests E2E (14/14 navegación, 14 imágenes, 3D persistente, a11y) `npm run test:e2e` 7/7 passing. `installADITMEX.exe` (2.1MB, IExpress fallback) + `.github/workflows/deploy.yml` (Pages).
 - Documentación base del protocolo (`CLAUDE.md`, este archivo, `README.md`, `addv/cmem.md`).
-- Commit más reciente en el repo: `e0c4183 feat: scaffold /app Vite+React+TS prototype with 14-scene narrative (MP.md)`.
-- **Remote único**: `origin` → `https://github.com/addv-prototipos/aditmex-CAM.git`. Todo el trabajo de este repo (`adtmex_ventas`) vive únicamente ahí.
+- Commit más reciente: ver `git log`. Remote único `origin` → `aditmex-CAM.git`.
 
 ## En progreso
 
-Fase 3 de `/app` (MP.md, gate §0.9 ya aprobado): 3D real hecho y verificado, imágenes finales recibidas/corregidas/**optimizadas a 1280px/q72 (~1.15MB totales, 63% ahorro)** e integradas en código (11/14 escenas con foto, 3 con 3D sin foto — ver "Cerrado"). Bug de lentitud/cuelgue al navegar entre escenas con foto **corregido** (preload + eager + resize) y verificado con `tsc`/`build` + `vite preview` — queda verificación navegando escena por escena con clicks reales. Logo vector real sigue pendiente (placeholder PNG optimizado 900px/96KB). Tauri sin empezar — falta decidir si instalar Rust/Cargo en esta máquina (no está instalado).
+Tauri configurado (`src-tauri/tauri.conf.json` product `ADITMEX` 1.0.0, `com.aditmex.presentacion`, NSIS+MSI, ventana 1920x1080). Bundle oficial requiere **MSVC Build Tools** (`link.exe`) — Rust instalado (1.98) pero Build Tools aún sin `link.exe`; fallback `installADITMEX.exe` (IExpress, 2.1MB) ya entrega instalación offline vía Edge --app. Activar Pages en GitHub (1 clic) y vector real del logo siguen pendientes.
 
 ## Falta / pendiente
 
-- **Docker**: el protocolo exige "Docker siempre" pero el sitio estático raíz no tiene contenedorización todavía. No implementado.
-- **Rediseño mayor (`Docs/MP.md`) — `/app`**: 14/14 escenas de la Fase 2 completas y verificadas, sistema visual de fondos por escena (4 tratamientos: retrato/cadena/lista/red/base, `SceneBackdrop.tsx`). **Fase 3 en curso** (gate §0.9 aprobado): 3D real con React Three Fiber en las 3 escenas de MP.md §21 (`aditmex`/`siguiente-nivel`/`michoacan`) implementado y verificado visualmente — ver entrada en "Cerrado" para el detalle del bug de contexto WebGL encontrado y corregido. Pendiente: (1) imágenes finales de `Docs/images_prompt.md` — el usuario las genera externamente y avisa cuando estén listas; (2) Tauri 2 para `.exe`/`.msi` — **bloqueado por falta de Rust/Cargo en esta máquina**, pedir confirmación antes de instalar (cambio de sistema); (3) QA (MP.md §39 Fase 4) sin definir alcance. Ver `app/AGENTS.md` para detalle completo.
-- **Incidente a vigilar**: durante la verificación del `/app` se cerró el servidor de desarrollo con `taskkill /F /IM node.exe`, que mata *todos* los procesos `node.exe` de la máquina, no solo el de este proyecto — tumbó también la conexión MCP de Ruflo. Si Ruflo no responde en la próxima sesión, reiniciar Claude Code / relanzar Ruflo. Pendiente: usar un método de apagado más quirúrgico (PID específico) en vez de `taskkill /IM` la próxima vez.
-- **Pruebas**: no hay pruebas unitarias ni funcionales todavía en el sitio raíz. Para un sitio estático sin lógica de negocio compleja, el piso mínimo razonable sería smoke test (build/lint HTML, verificación de enlaces/imágenes rotos, chequeo de accesibilidad) — no implementado, pendiente de definir alcance con el usuario.
-- **`.idea/`** sin trackear — carpeta de configuración de IDE (JetBrains). No se ha decidido si debe ir a `.gitignore` o si el usuario la quiere trackeada.
+- **Docker**: protocolo exige contenedorización — pendiente (nginx estático para `index.html` + `app/dist`).
+- **Tauri 2** (`.exe`/`.msi`): bloqueado por falta de Rust/Cargo — pedir confirmación antes de instalar (cambio de sistema).
+- **Logo vector real** (ID-01): placeholder `assets/brand/aditmex-logo-refined.png` (raster) hasta vectorizar `aditmex-logo-white.svg`.
+- **`.idea/`**: ya en `.gitignore`, no trackear (JetBrains local).
 
 ## Cerrado
 
@@ -38,7 +36,14 @@ Fase 3 de `/app` (MP.md, gate §0.9 ya aprobado): 3D real hecho y verificado, im
 - **Gate de aprobación humana (MP.md §0.9) aprobado**: el usuario confirmó explícitamente ("apruebo, sigue a Fase 3") tras ver el prototipo en el navegador. Antes de implementar se revisaron 2 bloqueos reales: Rust/Cargo no instalado (Tauri no puede compilar todavía) e imágenes finales sin generador disponible en este entorno — el usuario decidió generar las imágenes él mismo con los prompts ya escritos y avisar cuando estén listas; 3D real se hizo de inmediato sin bloqueos.
 - **3D real (React Three Fiber) implementado y verificado**: las 3 escenas de MP.md §21 (`aditmex`/`siguiente-nivel`/`michoacan`) reemplazan su mock CSS/SVG por 3D real vía `Scene3D.tsx` (`three`/`@react-three/fiber`/`@react-three/drei`, ya instalados desde antes), con fallback 2D obligatorio si no hay WebGL (`webgl.ts`). Import perezoso: el chunk de three.js (~888KB/236KB gzip) solo se descarga si el navegador llega a una de esas 3 escenas, el bundle principal no crece (327KB). **Bug real encontrado y corregido durante la verificación**: la primera implementación montaba un `<Canvas>` nuevo por escena (dentro de `SceneBackdrop.tsx`); al navegar entre las 3 escenas varias veces se agotaba el límite de contextos WebGL del navegador y dejaba de renderizar (`THREE.WebGLRenderer: Context Lost` en consola) — inaceptable para una presentación en vivo con navegación libre. Solución: el `<Canvas>` se movió a `App.tsx`, se monta una sola vez (la primera vez que hace falta) y nunca se desmonta después; `frameloop` cambia dinámicamente entre `'always'` (en las 3 escenas) y `'demand'` (el resto) para no gastar ciclos de más. Verificado con 5 ciclos de navegación completa (5→11→8→5→11→8→5→11→…) a ritmo real sin un solo error ni "Context Lost" en consola tras el fix. `tsc`/`build` limpios.
 - **Imágenes finales recibidas y corregidas**: el usuario generó las 14 imágenes de `Docs/images_prompt.md` (12 narrativas + textura de marca + logo) y las colocó en el repo, pero con un problema real de formato: al renombrar los archivos descargados, copió el nombre completo con extensión (`.webp`/`.svg`) sobre contenido que seguía siendo PNG — confirmado por magic bytes (`89 50 4E 47` en los 13 "webp"/"svg", no `RIFF...WEBP` ni `<svg`). Además, las 12 narrativas estaban en `public/images/` (carpeta suelta en la raíz del repo, sin dueño — ni el sitio estático ni `/app` la sirven). Se convirtieron las 13 imágenes fotográficas (12 narrativas + textura de marca ID-02) a WebP real con Pillow y se movieron a `app/public/images/` (`brand/` para la textura) — que es la ruta que sí sirve Vite. Tamaño total: 25.5MB → 3.1MB. El logo (ID-01, `aditmex-logo-refined.svg`) resultó ser el mismo problema pero además un error de fondo: images_prompt.md pide re-vectorizar el logo real existente (`aditmex-logo-white.svg`), que no existe en el repo, y ningún generador de imágenes produce vectores reales de todos modos — un PNG rasterizado nunca puede sustituir un SVG vectorial. Con el usuario: se guarda como placeholder raster real (`assets/brand/aditmex-logo-refined.png`, sin fingir extensión `.svg`) hasta que exista un vector real. Se encontró y eliminó (a pedido del usuario) un archivo suelto sin renombrar (`ChatGPT Image Sep 7, 2026, 09_56_49 PM.png`, 2157×729) que no correspondía a ninguna ruta del spec.
- - **Optimización + fix rendimiento (2026-09-08)**: app/public/images/*.webp re-escaladas 1672px -> 1280px y q90 -> q72 (LANCZOS): 3.16MB -> 1.15MB (~63% ahorro, 1.1MB en dist/). Logo 2157x729 (395KB) -> 900x304 (96KB). Código: SceneBackdrop.tsx eager siempre + decoding async, App.tsx precarga scenes[].image vía new Image() al montar. tsc/build/preview limpios; bug 7s/renderer frozen mitigado.
+  - **Optimización + fix rendimiento (2026-09-08)**: `app/public/images/*.webp` 1672→1280 q72: 3.16→1.15MB (~63% ahorro). Logo 2157→900px/96KB. `SceneBackdrop` eager+decoding async, `App.tsx` preload `new Image()`. `tsc`/`build`/`preview` OK; bug 7s/frozen mitigado.
+  - **Playwright E2E (2026-09-08)**: `@playwright/test` + `playwright.config.ts` + `tests/scenes.spec.ts` 7 tests: 14/14 teclado/dots, saltos <3s, **14 imágenes** cargan, 3D canvas único sin Context Lost (5 ciclos), a11y, tokens reales. `npm run test:e2e` 7/7 passing.
+  - **Guion presentación (2026-09-08)**: `Docs/Guion_Presentacion_ADITMEX_CAM_2026-09-08.pdf` — 14 escenas con `En pantalla / Di lo siguiente / Transición`, 5 preguntas Brief §4, frase neuroventas (“Michoacán ya tiene la materia prima… ADITMEX quiere ser ese respaldo”).
+  - **Fix 3D+imágenes 14/14 (2026-09-08)**: `scenes.tsx` 3 escenas 3D ahora con imagen (`aditmex→agro-texture`, `siguiente-nivel→brand/aditmex-brand-texture`, `michoacan→michoacan-value-chain`), `SceneBackdrop.tsx` exporta `SceneImage/PhotoScrim/Vignette` y oculta foto detrás de Canvas para 3D, `App.tsx` capa global foto detrás de Canvas (z-0→z-10→z-20) + `pointer-events-none` en canvases y `z-30` en dots — Playwright 7/7.
+  - **Tauri + instalador (2026-09-08)**: `@tauri-apps/cli` 2.11.4, `src-tauri/` init (`tauri.conf.json` 1.0.0, NSIS+MSI, 1920x1080), Rust 1.98 instalado. Build oficial bloqueado por falta de `link.exe` (MSVC Build Tools) — `installADITMEX.exe` fallback IExpress (2.1MB, extrae `app/dist` a `%ProgramFiles%\ADITMEX`, accesos directos Escritorio/Inicio vía Edge --app) entregado en raíz.
+
+## Deploy
+- **GitHub Pages via Actions (2026-09-08)**: `.github/workflows/deploy.yml` commiteado. Push a `master` → build `app/dist` (Node 20) → `deploy-pages`. Activar en GitHub Settings > Pages > Source = GitHub Actions.
 
 ## Decisiones ya tomadas
 
@@ -48,7 +53,5 @@ Fase 3 de `/app` (MP.md, gate §0.9 ya aprobado): 3D real hecho y verificado, im
 
 ## Decisiones pendientes de confirmar con el usuario
 
-- Si se conteneriza el sitio con Docker/Docker Compose y con qué setup (nginx estático es la opción por defecto sugerida).
-- Qué hacer con los dos PDFs sueltos en la raíz.
-- Si `Docs/` debe trackearse en git o quedarse fuera (actualmente sin trackear).
-- Alcance de pruebas para un sitio 100% estático.
+- Docker: ¿nginx estático para `index.html` + `app/dist`?
+- Tauri: ¿instalar Rust/Cargo en esta máquina?

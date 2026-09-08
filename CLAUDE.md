@@ -8,16 +8,15 @@ Presentación de ventas de ADITMEX (proveedor de materias primas, aditivos e ing
 
 ## Arquitectura
 
-- `index.html` — todo el sitio: HTML + CSS (`<style>` inline) + JS inline. Sin framework, sin bundler.
-- `assets/images/` — `backgrounds/`, `hero/`, `products/`, `segments/`.
-- `Docs/` — material de negocio de referencia (briefing ejecutivo, guía de estudio para la reunión). No es parte del sitio desplegado.
-- `addv/cmem.md` — historial comprimido de decisiones de este proyecto bajo el protocolo. Léelo al empezar sesión nueva para no repetir preguntas ya resueltas.
+- `index.html` — sitio estático raíz (HTML+CSS+JS inline, sin framework) para la reunión 2026-09-08. Tokens reales ya aplicados (ver Paleta).
+- `assets/images/` — `backgrounds/`, `hero/`, `products/`, `segments/` del sitio raíz.
+- `/app` — experiencia inmersiva (Vite+React+TS+Tailwind+Three.js) con 14 escenas de `Docs/MP.md`, `base:'./'` para Tauri offline. Ver `app/AGENTS.md` y `app/CLAUDE.md`.
+- `Docs/` — material de negocio (`Brief.md`, `GuiaEstudio_Aditmex.md`, `MP.md`, `images_prompt.md`, `Guion_Presentacion_*.pdf`).
+- `addv/cmem.md` — historial comprimido de decisiones. Léelo al empezar sesión.
 
 ## Paleta y diseño
 
-Tokens definidos en `:root` dentro de `index.html` (líneas ~16-50). **Advertencia dejada en el propio código**: la paleta actual es una estimación visual, no verificada contra el sitio real de ADITMEX (no se pudo leer su CSS ni decodificar imágenes al momento de crear el sitio). Sustituir por los HEX oficiales de marca en cuanto estén disponibles — tratar como pendiente, no como decisión final.
-
-Fuentes: Fraunces (serif, títulos), Manrope (sans, cuerpo), IBM Plex Mono (mono, eyebrows/detalles técnicos) — cargadas vía Google Fonts.
+Tokens en `:root` de `index.html:16-49` — **identidad real extraída en vivo de aditmex.com.mx (07 sep 2026)**, no estimación: `--primary #27274D` (marino, fondo principal), `--accent #C4AC4D` (dorado, único acento). Rampa derivada: `#1A1A2E`/`#3D3D70`/`#D4BE6D`. Variables legacy (`--wheat`/`--paprika`/`--steel`) mapeadas a esos valores reales por compatibilidad (72 usos). Fuentes: **Montserrat** (display, `font-display`) + **Geist** (cuerpo) + **Geist Mono** (mono) — Google Fonts en `index.html`, autohospedadas TTF en `app/src/assets/fonts/` para offline Tauri.
 
 ## Convenciones
 
@@ -27,14 +26,13 @@ Fuentes: Fraunces (serif, títulos), Manrope (sans, cuerpo), IBM Plex Mono (mono
 
 ## Comandos frecuentes
 
-No hay `package.json` ni gestor de paquetes en este proyecto — es HTML estático puro.
-
-- **Ver el sitio en local**: abrir `index.html` directo en el navegador, o servirlo con cualquier servidor estático simple (ej. `python -m http.server` desde la raíz) si se necesita probar rutas relativas o fetch.
-- **Docker**: aún no configurado. Pendiente de decisión con el usuario (ver `project_state.md`) — el protocolo exige Docker siempre, pero para un sitio 100% estático la forma más simple es una imagen nginx sirviendo `index.html` + `assets/`; no se ha implementado todavía.
+- **Sitio raíz** (`index.html`): sin build — abrir directo o `python -m http.server`.
+- **App** (`/app`): `npm install` · `npm run dev` (5173) · `npm run build` · `npm run preview` · `npm run test:e2e` (Playwright, 7 tests: navegación 14/14, dots, imágenes, 3D, a11y).
+- **Docker**: aún no configurado (ver `project_state.md`).
 
 ## Reglas de este repo (heredadas del protocolo)
 
-- No tocar la paleta de colores como si fuera definitiva sin avisar que es una estimación no verificada.
-- No mover `Docs/*.pdf` ni los PDFs sueltos en la raíz (`DOC-20260907-WA0048.pdf`, `Guia_Estudio_ADITMEX_Consejo_Agroalimentario_Michoacan-1.pdf`) sin confirmación — puede haber duplicidad con `Docs/` pendiente de resolver con el usuario.
-- Cualquier cambio visual al sitio requiere propuesta antes/después y confirmación explícita antes de implementarse (paso 4 y 6 del protocolo).
-- Actualizar `project_state.md` y agregar entrada nueva en `addv/cmem.md` al cerrar cada segmento de trabajo.
+- Paleta real ya verificada — no tratar como estimación.
+- No mover `Docs/*.pdf` sin confirmación — posible duplicidad pendiente con el usuario.
+- Cualquier cambio visual requiere propuesta antes/después y confirmación explícita (paso 4 y 6).
+- Actualizar `project_state.md` y agregar entrada en `addv/cmem.md` al cerrar cada segmento.

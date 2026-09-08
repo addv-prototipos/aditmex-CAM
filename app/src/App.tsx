@@ -1,7 +1,7 @@
 import { Suspense, lazy, useCallback, useEffect, useMemo, useState } from 'react'
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion'
 import { scenes } from './scenes'
-import { SceneBackdrop } from './SceneBackdrop'
+import { SceneBackdrop, SceneImage, PhotoScrim, Vignette } from './SceneBackdrop'
 import { REAL_3D_SCENES, hasWebGL } from './webgl'
 
 const Scene3D = lazy(() => import('./Scene3D').then((m) => ({ default: m.Scene3D })))
@@ -55,12 +55,24 @@ function App() {
     return () => window.removeEventListener('keydown', onKey)
   }, [index, go, last])
 
+  const is3DScene = REAL_3D_SCENES.has(scene.id) && hasWebGL()
+
   return (
     <div className="relative h-screen w-screen overflow-hidden bg-navy text-paper">
+      {/* Para escenas 3D la foto va detrás del <Canvas> global (z-0), el 3D queda entre foto y texto */}
+      {is3DScene && scene.image && (
+        <div className="absolute inset-0 z-0 overflow-hidden">
+          <SceneImage src={scene.image} />
+          <PhotoScrim />
+          <Vignette strength={scene.treatment === 'retrato' ? 'strong' : 'soft'} />
+        </div>
+      )}
       {needs3D && (
-        <Suspense fallback={null}>
-          <Scene3D sceneId={scene.id} reduceMotion={Boolean(reduceMotion)} active={active3DScene} />
-        </Suspense>
+        <div className="absolute inset-0 z-10 pointer-events-none">
+          <Suspense fallback={null}>
+            <Scene3D sceneId={scene.id} reduceMotion={Boolean(reduceMotion)} active={active3DScene} />
+          </Suspense>
+        </div>
       )}
       <AnimatePresence mode="wait">
         <motion.section
@@ -69,7 +81,7 @@ function App() {
           animate={{ opacity: 1, y: 0 }}
           exit={reduceMotion ? { opacity: 1 } : { opacity: 0, y: -24 }}
           transition={{ duration: reduceMotion ? 0.01 : 0.7, ease: [0.22, 0.68, 0, 1] }}
-          className="relative flex h-full w-full flex-col items-start justify-center gap-6 overflow-hidden px-10 md:px-24"
+          className="relative z-20 flex h-full w-full flex-col items-start justify-center gap-6 overflow-hidden px-10 md:px-24"
         >
           <SceneBackdrop
             treatment={scene.treatment}
@@ -103,7 +115,7 @@ function App() {
       </AnimatePresence>
 
       {/* Indicador de progreso — discreto, MP.md §19/§30 (sin navbar tradicional) */}
-      <div className="absolute bottom-8 left-1/2 flex -translate-x-1/2 gap-2">
+      <div className="absolute bottom-8 left-1/2 z-30 flex -translate-x-1/2 gap-2">
         {scenes.map((s, i) => (
           <button
             key={s.id}
@@ -116,7 +128,7 @@ function App() {
         ))}
       </div>
 
-      <div className="absolute right-8 top-8 font-body text-xs tracking-[0.1em] text-white/40">
+      <div className="absolute right-8 top-8 z-30 font-body text-xs tracking-[0.1em] text-white/40">
         {String(index + 1).padStart(2, '0')} / {String(scenes.length).padStart(2, '0')}
       </div>
     </div>

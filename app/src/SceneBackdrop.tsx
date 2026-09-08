@@ -124,60 +124,7 @@ function Particles({ reduceMotion, organize = false }: { reduceMotion: boolean; 
     return () => cancelAnimationFrame(raf)
   }, [reduceMotion, organize])
 
-  return <canvas ref={ref} className="absolute inset-0 h-full w-full" />
-}
-
-/**
- * Foto final de Docs/images_prompt.md (Fase 3, integrada 2026-09-07).
- * Solo en escenas sin 3D real (ver nota en scenes.tsx) — object-cover a
- * pantalla completa, primer plano oscurecido con `PhotoScrim` para que el
- * texto (izquierda) tenga contraste garantizado sin depender del
- * contenido de la foto.
- *
- * Rendimiento 2026-09-08: todas eager + async decoding + preload global
- * en App.tsx. La transición Framer es 700ms; si la imagen aún no está en
- * caché, el decode bloquea el hilo y la navegación se percibe como
- * "congelada" (bug 7s/45s reportado). Con 1.1MB totales tras optimización
- * (1280px, q72) es más barato precargar que dejar `lazy` por escena.
- */
-function SceneImage({ src }: { src: string }) {
-  return (
-    <img
-      src={src}
-      alt=""
-      className="absolute inset-0 h-full w-full object-cover"
-      loading="eager"
-      decoding="async"
-      draggable={false}
-    />
-  )
-}
-
-function PhotoScrim() {
-  return (
-    <div
-      className="absolute inset-0"
-      style={{
-        background:
-          'linear-gradient(100deg, rgba(26,26,46,.88) 0%, rgba(26,26,46,.62) 42%, rgba(26,26,46,.28) 75%, rgba(26,26,46,.32) 100%)',
-      }}
-    />
-  )
-}
-
-function Vignette({ strength }: { strength: 'soft' | 'strong' }) {
-  const opacity = strength === 'strong' ? 1 : 0.55
-  return (
-    <div
-      className="absolute inset-0"
-      style={{
-        opacity,
-        background:
-          'radial-gradient(120% 90% at 78% 18%, rgba(196,172,77,.14), transparent 60%), ' +
-          'radial-gradient(90% 70% at 8% 100%, rgba(61,61,112,.5), transparent 65%)',
-      }}
-    />
-  )
+  return <canvas ref={ref} className="pointer-events-none absolute inset-0 h-full w-full" />
 }
 
 /**
@@ -324,6 +271,46 @@ function Legacy2DContent({
   )
 }
 
+export function SceneImage({ src }: { src: string }) {
+  return (
+    <img
+      src={src}
+      alt=""
+      className="absolute inset-0 h-full w-full object-cover"
+      loading="eager"
+      decoding="async"
+      draggable={false}
+    />
+  )
+}
+
+export function PhotoScrim() {
+  return (
+    <div
+      className="absolute inset-0"
+      style={{
+        background:
+          'linear-gradient(100deg, rgba(26,26,46,.88) 0%, rgba(26,26,46,.62) 42%, rgba(26,26,46,.28) 75%, rgba(26,26,46,.32) 100%)',
+      }}
+    />
+  )
+}
+
+export function Vignette({ strength }: { strength: 'soft' | 'strong' }) {
+  const opacity = strength === 'strong' ? 1 : 0.55
+  return (
+    <div
+      className="absolute inset-0"
+      style={{
+        opacity,
+        background:
+          'radial-gradient(120% 90% at 78% 18%, rgba(196,172,77,.14), transparent 60%), ' +
+          'radial-gradient(90% 70% at 8% 100%, rgba(61,61,112,.5), transparent 65%)',
+      }}
+    />
+  )
+}
+
 export function SceneBackdrop({
   treatment,
   reduceMotion,
@@ -335,13 +322,14 @@ export function SceneBackdrop({
   sceneId: string
   image?: string
 }) {
-  // El canvas 3D persistente de App.tsx ya se ve por detrás — solo hace
-  // falta no dibujar el mock 2D encima cuando aplica.
   const rendersOnGlobalCanvas = useMemo(() => REAL_3D_SCENES.has(sceneId) && hasWebGL(), [sceneId])
+  // Para escenas 3D la foto se renderiza en App.tsx detrás del <Canvas> global
+  // (z-0), para que el 3D quede entre la foto y el texto. Aquí solo va Vignette.
+  const showImageHere = !!image && !rendersOnGlobalCanvas
 
   return (
     <div className="absolute inset-0 z-0 overflow-hidden">
-      {image && (
+      {showImageHere && (
         <>
           <SceneImage src={image} />
           <PhotoScrim />

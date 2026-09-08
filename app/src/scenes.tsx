@@ -93,6 +93,7 @@ export const scenes: Scene[] = [
     eyebrow: 'Quién es ADITMEX',
     title: 'El aliado detrás del ingrediente.',
     treatment: 'retrato',
+    image: '/images/agro-texture-background.webp',
   },
   {
     id: 'qué-hacemos',
@@ -124,6 +125,7 @@ export const scenes: Scene[] = [
     ),
     body: 'Fruta → pulpa → bebida · Fruta → preparación → mermelada',
     treatment: 'cadena',
+    image: '/images/brand/aditmex-brand-texture.webp',
   },
   {
     id: 'confianza',
@@ -146,6 +148,7 @@ export const scenes: Scene[] = [
     title:
       'Queremos que las empresas agroalimentarias de Michoacán tengan cerca un aliado para resolver lo que necesitan para crecer.',
     treatment: 'red',
+    image: '/images/michoacan-value-chain.webp',
   },
   {
     id: 'vision',
