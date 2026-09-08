@@ -7,15 +7,36 @@ código.
 
 **Nota de origen**: este proyecto lo empezó Claude Code (Claude Sonnet 5) el
 2026-09-07 siguiendo el flujo de la skill `addv-web-app` (ver `../CLAUDE.md`
-en la raíz del repo) y el prompt maestro `../Docs/MP.md`. Si continúas con
-otro modelo (el dueño del proyecto mencionó "muse spark 1.2" — no es un
-modelo que yo reconozca en mi conocimiento, así que no asumas capacidades
-específicas de él; verifica lo básico — soporte de TypeScript/JSX, tool use,
-contexto largo — antes de asumir que puede seguir el mismo flujo agentic sin
-ajustes), aplica el mismo rigor: no inventes datos de marca, no saltes el
-gate de aprobación humana, no reemplaces el `index.html` de la raíz del
-repo (es el sitio ya en producción, usado en la reunión del 2026-09-08 con
-el Consejo Agroalimentario de Michoacán — intocable, vive fuera de `/app`).
+en la raíz del repo) y el prompt maestro `../Docs/MP.md`. Al 2026-09-07
+(cierre de sesión) el estado es: **Fase 2 completa (14/14 escenas)**,
+verificada y commiteada (`e0c4183`) — ver sección "Qué existe ahora mismo".
+Lo que queda es exactamente lo descrito en "Qué sigue" abajo, en ese orden,
+sin saltarse el gate.
+
+Si continúas con otro modelo (el dueño del proyecto mencionó "OpenCode con
+muse spark v1.2" — no es un modelo que yo reconozca en mi conocimiento, así
+que no asumas capacidades específicas de él; verifica lo básico — soporte
+de TypeScript/JSX, tool use, contexto largo — antes de asumir que puede
+seguir el mismo flujo agentic sin ajustes), el objetivo es que ejecutes el
+plan pendiente **con el mismo rigor que Claude aplicó aquí**, es decir:
+- No inventes datos de marca, certificaciones, cifras o clientes que no
+  estén en `Docs/Brief.md` / `Docs/GuiaEstudio_Aditmex.md` (regla de oro,
+  ver abajo).
+- No saltes el **gate de aprobación humana** (MP.md §0.9) — al terminar el
+  mock 3D, preséntalo y detente. No hay excepción por "se ve simple" o
+  "ya que estoy aquí".
+- No reemplaces ni toques `/index.html` (raíz del repo, un directorio
+  arriba) — es el sitio ya en producción, usado en la reunión del
+  2026-09-08 con el Consejo Agroalimentario de Michoacán. Intocable desde
+  aquí, vive fuera de `/app`.
+- Antes de cualquier `git push`, corre `git remote -v` y confirma que
+  apunta a `https://github.com/addv-prototipos/aditmex-CAM.git` (`origin`).
+  Es el **único remote autorizado** para este directorio — ver sección
+  "Git / remotes" abajo antes de tocar nada de control de versiones.
+- Verifica cambios visuales en navegador leyendo el DOM real (texto/valores
+  de atributos), no solo screenshots — un screenshot puede capturar un
+  frame a mitad de transición o una pestaña con bundle cacheado y parecer
+  un bug que no existe (ver "Gotchas operativos" abajo, pasó en esta sesión).
 
 ## Qué es esto, dónde vive
 
@@ -100,13 +121,13 @@ un CDN.
   `App.tsx` y el media query global en `index.css`. Cualquier animación
   nueva debe seguir el mismo patrón.
 
-## Qué existe ahora mismo (Fase 2 de MP.md — prototipo parcial)
+## Qué existe ahora mismo (Fase 2 de MP.md — completa, 14/14 escenas)
 
 `src/App.tsx` + `src/scenes.tsx`: shell de presentación de pantalla
 completa, navegación por teclado (`←/→/Space/Home/End`), indicador de
 progreso discreto (puntos, sin navbar tradicional — MP.md §30), transición
-entre escenas con Framer Motion. **5 de las 14 escenas de MP.md §12**, con
-texto literal (no inventado):
+entre escenas con Framer Motion. **Las 14 escenas de MP.md §12**, texto
+literal (no inventado), en este orden en `scenes.tsx`:
 
 1. Portada — "ADITMEX" / "Materias primas que abren posibilidades."
 2. El contexto — "Michoacán produce." / "El valor no termina en la cosecha."
@@ -115,35 +136,83 @@ texto literal (no inventado):
 4. El problema invisible — "A veces, crecer no requiere una idea nueva. /
    Requiere encontrar la solución correcta."
 5. Quién es ADITMEX — "El aliado detrás del ingrediente."
+6. Qué hacemos (sistema)
+7. El portafolio como soluciones — "No empezamos preguntando qué producto
+   quieres comprar. Empezamos preguntando qué necesitas resolver."
+8. Del producto actual al siguiente nivel — materia prima → formulación →
+   producto estandarizado (ejemplos: fruta → pulpa → bebida; fruta →
+   preparación → mermelada)
+9. Confianza — "El ADITMEX Standard" (5 pasos: escuchamos, entendemos,
+   buscamos, proponemos, damos seguimiento)
+10. Servicio — "Así trabajamos."
+11. Michoacán — posicionamiento como aliado local para crecer
+12. Visión — "Una nueva etapa de crecimiento necesita proveedores que
+    piensen contigo."
+13. Cierre — "Una buena idea merece algo más que una materia prima. Merece
+    respaldo. ADITMEX."
+14. Siguiente paso (CTA final) — "Quien conoce lo que necesita para
+    avanzar, deja de depender del azar."
 
-Verificado: `tsc --noEmit` limpio, `npm run build` limpio, probado en
-navegador (teclado, click en indicador de progreso, contraste real).
+Verificado (2026-09-07): `tsc --noEmit` limpio, `npm run build` limpio
+(offline, sin fetch externo). Probado en navegador con recorrido completo
+de las 14 escenas leyendo el DOM real (`get_page_text`, no solo
+screenshot) — contenido único por escena, contador `NN/14` y dots
+sincronizados con el estado real, sin errores de consola. Commiteado como
+`e0c4183` en `git`. Todo esto ya está hecho — no lo repitas.
 
 ## Qué sigue (en orden)
 
-1. **Escenas 06–14** (MP.md §12, mismo patrón que las 5 existentes — agrega
-   objetos a `scenes.tsx`): qué hacemos (sistema), portafolio como
-   soluciones, del producto actual al siguiente nivel, confianza (ADITMEX
-   Standard), servicio, Michoacán, visión, cierre, CTA final. Copy ya
-   redactado en MP.md, cópialo — no lo reinventes salvo que el usuario pida
-   ajustarlo.
-2. **Sistema visual completo**: hoy solo hay tipografía + color. Falta
+1. **Sistema visual completo**: hoy solo hay tipografía + color. Falta
    composición por escena (media, negative space, jerarquía) — usar
    `Docs/images_prompt.md` como guía de qué imagen va en cada escena
    (todavía son placeholders/mocks, no imágenes finales generadas).
-3. **Mock 3D** (MP.md §22): antes de integrar Three.js real, un placeholder
+2. **Mock 3D** (MP.md §22): antes de integrar Three.js real, un placeholder
    (gradiente animado, canvas de partículas simple como el que ya existe en
    el `index.html` de raíz) es suficiente para que el prototipo sea
    revisable.
-4. **GATE DE APROBACIÓN HUMANA** (MP.md §0.9): al completar el prototipo
+3. **GATE DE APROBACIÓN HUMANA** (MP.md §0.9): al completar el prototipo
    con mocks, preséntalo y **detente**. No sigas con imágenes finales, 3D
    real, Tauri ni empaquetado sin que el usuario diga algo equivalente a
    "aprobado" / "continúa" / "construye la versión final" (MP.md §0.10 —
    "se ve bien" o "me gusta" NO cuenta como luz verde).
-5. Después del gate: 3 momentos 3D reales con React Three Fiber (partículas
+4. Después del gate: 3 momentos 3D reales con React Three Fiber (partículas
    organizándose / cadena materia-prima→ingrediente→producto / red de
    conexión productores-ingredientes-mercado), imágenes finales desde
    `Docs/images_prompt.md`, Tauri 2 para `.exe`/`.msi`, QA (MP.md §39 Fase 4).
+
+## Git / remotes
+
+El repo raíz (`adtmex_ventas`, un directorio arriba de `/app`) tiene **un
+solo remote autorizado**: `origin` → `https://github.com/addv-prototipos/aditmex-CAM.git`.
+Todo el trabajo de este proyecto (raíz + `/app`) vive ahí.
+
+Existió un segundo remote, `origin-ventas` (`aditmex-ventas.git`, de otro
+propietario/proyecto) — se usó por error una vez para pushear un commit de
+`/app`, se revirtió (force-push de vuelta a su estado previo) y el remote
+se **eliminó** del repo local a pedido explícito del usuario. No lo vuelvas
+a agregar ni a pushear ahí salvo instrucción nueva y explícita del usuario.
+Antes de cualquier `git push`, corre `git remote -v` y confirma que el
+único remote es `aditmex-CAM.git`.
+
+## Gotchas operativos (aprendidos en esta sesión, evita repetirlos)
+
+- **No uses `taskkill /F /IM node.exe`** (ni equivalentes que matan por
+  nombre de proceso) para detener el servidor de `vite`. Mata *todos* los
+  procesos `node.exe` de la máquina, incluyendo cosas que no tienen nada
+  que ver con este proyecto (en esta sesión tumbó también la conexión MCP
+  de Ruflo). Detén el proceso por PID específico, o con `Ctrl+C` en la
+  terminal donde corre.
+- **Verificación visual en navegador**: si acabas de cambiar código y algo
+  se ve "congelado" o inconsistente en un screenshot, antes de asumir que
+  es un bug del código, descarta: (1) bundle cacheado en la pestaña —
+  recarga con `ctrl+shift+r`; (2) si mandaste varias teclas rápido, la
+  transición de `AnimatePresence mode="wait"` en `App.tsx` (700ms) puede
+  hacer que el contenido visual vaya un paso detrás del índice por un
+  instante — es esperado, no un bug, espera ~1s entre pasos al probar
+  navegación por teclado.
+- Lee el DOM real (texto/atributos) para verificar estado, no solo
+  screenshots — un JPEG comprimido o un frame a mitad de animación puede
+  hacer parecer un bug algo que no lo es.
 
 ## Comandos
 
