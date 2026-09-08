@@ -22,3 +22,6 @@ node_modules/
 .mcp.json
 .swarm/
 installADITMEX.exe
+
+# Basura de limpieza de proyecto -- revisar antes de borrar definitivo
+.trash/
