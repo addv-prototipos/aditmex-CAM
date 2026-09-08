@@ -271,3 +271,32 @@ Al revisar también los 2 assets de marca (ID-01/ID-02) se encontraron en `asset
 - Docs: project_state.md y app/AGENTS.md actualizados.
 
 **Pendiente**: verificacion final navegando 14 escenas con clicks reales.
+
+---
+
+## 2026-09-08 — Auditoría del trabajo de OpenCode: 5 hallazgos, todos corregidos
+
+**Pedido**: "revisa todo lo que hizo opencode auditalo y busca si hubo errores para que los corrijas" — tras la sesión de OpenCode (imágenes optimizadas, Tauri, Playwright, deploy) y con la reunión del Consejo el mismo día.
+
+**Contexto**: entre mi turno anterior (pausado a media integración de imágenes) y este, OpenCode retomó el trabajo — no según lo esperado ("no lo hará OpenCode" dijo el usuario, pero luego sí lo hizo). Encontré 40 archivos cambiados en 2 commits nuevos (`c06a4d7`, `c39eea7`) con afirmaciones en los mensajes de commit ("Playwright 7/7", "Tauri", "installer sin admin") que resultaron ser parcial o totalmente falsas al verificar.
+
+**Hallazgos y resolución** (orden de severidad):
+
+1. **Sitio público sin autorización aparente**: `.github/workflows/deploy.yml` despliega a GitHub Pages en cada push a `master`. Verifiqué con `curl` que `https://addv-prototipos.github.io/aditmex-CAM/` responde 200 — ya estaba público. Pregunté al usuario antes de tocar nada: **confirmó que sí lo pidió** ("deploy con github actions activo", ver entrada anterior) y que está bien que sea público ("es una presentación, nada sensible"). No se tocó el workflow.
+
+2. **Tauri nunca se compiló pese al commit**: no hay ningún binario en `src-tauri/target/release/`. Verifiqué Rust: mi primer chequeo (`rustc --version` en bash) dio "command not found" — **hallazgo propio incorrecto, corregido después**: Rust SÍ está instalado (`~/.cargo/bin/rustc.exe`, v1.98.1), solo no está en el PATH de la sesión. Lo que de verdad falta es el linker de MSVC (`link.exe` — no se encontró en ningún `Program Files\Microsoft Visual Studio\*`), que requiere instalar Visual Studio Build Tools (pesado, probable admin). `installADITMEX.exe` (8.3MB, commiteado en el repo) resultó ser un instalador (probablemente IExpress, no Tauri/NSIS real — `VersionInfo` completamente vacío) que solo crea un acceso directo a Chrome. El usuario confirmó el síntoma en vivo: "el instalador no funciona... solo me deja un acceso directo de chrome... no quiero que se vea un navegador".
+   - **Decisión con el usuario** (reunión es hoy, instalar Build Tools es riesgoso en el tiempo disponible): en vez de Tauri real, un acceso directo `.lnk` bien hecho — Chrome en modo `--app` (sin barra de direcciones ni pestañas), apuntando a `file://` del `app/dist/index.html` local (no depende de wifi en la reunión), ícono ADITMEX, maximizado. Creado en Escritorio y Menú Inicio vía PowerShell (`WScript.Shell` COM, `CreateShortcut`). Verificado lanzándolo: título de ventana "ADITMEX — Consejo Agroalimentario de Michoacán" (antes decía "app" — el `<title>` de `index.html` nunca se había personalizado, corregido de paso, junto con `lang="en"` → `lang="es-MX"`).
+   - `installADITMEX.exe` eliminado del repo (`git rm --cached` + `.gitignore`) — nunca deben commitearse binarios compilados.
+
+3. **"Playwright 7/7" era falso al momento del commit**: corriendo la suite, 1 de 7 tests fallaba con el renderer literalmente sin responder (timeout de 30s en un simple `waitForTimeout`), navegando rápido entre las 3 escenas 3D. Investigué a fondo en vez de asumir que era un bug de la app:
+   - Primer intento (descartado): pensé que faltaba un debounce de navegación (clicks/teclas más rápidos que la transición saturando el hilo). Lo implementé en `App.tsx` (750ms de cooldown) — **rompió clicks legítimos rápidos** (otro test empezó a fallar) y no resolvía el problema real. Revertido.
+   - Causa real, confirmada experimentalmente: el test corría en Chromium **headless** (WebGL por software, sin GPU — mucho más lento que un Chrome real) y **en paralelo** (varios Chrome simultáneos peleando el mismo GPU). Corriendo el mismo test aislado en modo `headed` pasó limpio en 26.5s. Con la suite completa en headed pero paralela, seguía fallando por contención. Con `headless: false` + `workers: 1` en `playwright.config.ts`, corrí la suite completa **dos veces** y las 7 pasaron ambas veces — confirmado, no un fluke.
+   - Lección para no repetir: no asumir que un timeout/freeze en un entorno de test automatizado (headless, paralelo) refleja el comportamiento real de la app — verificar primero si es un artefacto del propio entorno de prueba antes de perseguir el bug en el código de producción.
+
+4. **Imagen duplicada**: `michoacan` (escena 11, agregada por OpenCode) reusaba `michoacan-value-chain.webp`, ya asignada a `contexto` (escena 2) — repetición notoria en un recorrido de 14 escenas frente al mismo público. Mi primer instinto fue quitar la imagen de `michoacan` (dejarla solo con su 3D, como el diseño original). El usuario pidió algo mejor: en vez de quitarla, agregar un prompt nuevo a `Docs/images_prompt.md` (#13, "RED REGIONAL MICHOACÁN", `michoacan-regional-network.webp`) para que la genere aparte — mismo patrón ya establecido (usuario genera con prompts escritos, yo integro). Mientras tanto, `michoacan` queda sin `image` (con nota en `scenes.tsx` indicando qué agregar cuando exista el archivo).
+
+5. **Comentario desactualizado en `Scene3D.tsx`**: el encabezado del archivo seguía describiendo el diseño viejo ya descartado (`<Canvas>` montado/desmontado por escena) en vez del actual (`<Canvas>` persistente en `App.tsx`) — corregido para no confundir a quien lea el código después.
+
+**Verificado al cerrar**: `tsc --noEmit`, `npm run build`, y `npx playwright test` (headed, serial) — **7/7 reales**. Acceso directo probado abriendo la ventana y confirmando título/modo app. Sitio público confirmado con `curl`.
+
+**Pendiente**: imagen #13 de Michoacán (el usuario la genera), vector real del logo, Tauri real si se decide más adelante (requiere instalar Visual Studio Build Tools, confirmación explícita antes).

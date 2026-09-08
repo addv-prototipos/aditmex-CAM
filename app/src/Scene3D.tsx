@@ -6,10 +6,14 @@
  * (ver webgl.ts) — si no hay WebGL, SceneBackdrop nunca llega a importar
  * este archivo, cae directo al mock 2D ya aprobado.
  *
- * Un <Canvas> se monta/desmonta junto con cada una de estas 3 escenas
- * (AnimatePresence en App.tsx desmonta la escena completa al cambiar) —
- * no corre de fondo en las otras 11, cumple "correr razonablemente en
- * laptops Windows" (MP.md §21).
+ * El <Canvas> vive en App.tsx (fuera de AnimatePresence), se monta UNA
+ * sola vez y persiste entre las 14 escenas — NO lo muevas de vuelta a
+ * SceneBackdrop/por-escena. Ya se intentó: recrea el contexto WebGL en
+ * cada navegación y lo agota en pocos clics ("THREE.WebGLRenderer:
+ * Context Lost", verificado 2026-09-07). `active` controla el
+ * `frameloop` ('always' en las 3 escenas, 'demand' el resto) para no
+ * gastar ciclos de más en las otras 11, cumpliendo "correr
+ * razonablemente en laptops Windows" (MP.md §21) sin destruir el canvas.
  *
  * Paleta: únicamente navy/gold reales de marca (ver index.css --color-*),
  * sin colores nuevos. `reduceMotion` congela cada escena en su estado

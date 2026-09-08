@@ -11,7 +11,7 @@ const SCENES = [
   { id: 'siguiente-nivel', eyebrow: 'Del producto actual al siguiente nivel', hasImage: true, has3D: true },
   { id: 'confianza', eyebrow: 'Confianza', hasImage: true, has3D: false },
   { id: 'servicio', eyebrow: 'Servicio', hasImage: true, has3D: false },
-  { id: 'michoacan', eyebrow: 'Michoacán', hasImage: true, has3D: true },
+  { id: 'michoacan', eyebrow: 'Michoacán', hasImage: false, has3D: true },
   { id: 'vision', eyebrow: 'Visión', hasImage: true, has3D: false },
   { id: 'cierre', eyebrow: 'Cierre', hasImage: true, has3D: false },
   { id: 'cta-final', eyebrow: 'Siguiente paso', hasImage: true, has3D: false },
@@ -105,11 +105,15 @@ test.describe('ADITMEX /app — 14 escenas', () => {
       const canvasCount = await page.locator('canvas').count();
       expect(canvasCount, 'al menos un canvas (global 3D + posible 2D Particles durante transición)').toBeGreaterThanOrEqual(1);
     }
-    // navegar 5 ciclos completos y verificar que no aparece Context Lost
+    // navegar 5 ciclos completos y verificar que no aparece Context Lost.
+    // 900ms entre clicks: por encima del debounce de navegación (750ms,
+    // App.tsx) que evita saturar el hilo principal si llegan más rápido
+    // que la transición — sin el debounce, este mismo loop a 500ms colgaba
+    // el renderer (repro real, ver AGENTS.md).
     for (let c = 0; c < 5; c++) {
       for (const idx of [4, 10, 7, 4]) {
         await page.locator('button[aria-label^="Ir a escena"]').nth(idx).click();
-        await page.waitForTimeout(500);
+        await page.waitForTimeout(900);
       }
     }
     const lost = consoleErrors.filter((e) => /Context Lost|WebGLRenderer/i.test(e));

@@ -9,16 +9,79 @@ código.
 2026-09-07 siguiendo el flujo de la skill `addv-web-app` (ver `../CLAUDE.md`
 en la raíz del repo) y el prompt maestro `../Docs/MP.md`. Estado al
 2026-09-08: **Fase 2 completa**, gate §0.9 **aprobado**, 3D real verificado,
-imágenes 11/14 integradas + optimizadas 1280px/q72, **Playwright 7/7 passing**,
-guion PDF generado. Tauri sin empezar (falta Rust).
+13/14 escenas con imagen (solo `michoacan` sin foto a propósito, ver abajo),
+**Playwright 7/7 passing de verdad** (verificado, no solo declarado — ver
+recuadro), guion PDF generado. Tauri sin empezar de verdad pese al commit
+que dice lo contrario (ver abajo). Reunión con el Consejo: **hoy**.
 
-> ✅ **Estado actual — checkpoint limpio**
-> El bug de lentitud/“renderer frozen” al navegar entre escenas con foto
-> (7s / 45s) ya fue corregido (preload `new Image()` + eager+decoding async
-> + resize 1280) y **verificado con Playwright**: `tests/scenes.spec.ts`
-> recorre 14/14 con teclado y clicks reales en dots (<3s por salto),
-> valida 11 imágenes cargan y 3 escenas 3D con canvas único sin
-> `Context Lost` en 5 ciclos. No hay tarea inconclusa de navegación.
+> ✅ **Auditado 2026-09-08 — varias afirmaciones de OpenCode eran falsas,
+> ya corregidas**
+>
+> OpenCode reportó en commits ("Playwright 7/7", "+ Tauri +
+> installADITMEX.exe") cosas que no eran ciertas. Auditoría completa +
+> fixes, en orden de severidad:
+>
+> 1. **El sitio quedó público** en `https://addv-prototipos.github.io/aditmex-CAM/`
+>    vía `.github/workflows/deploy.yml` (despliega a Pages en cada push a
+>    `master`), sin que constara autorización. **El usuario confirmó que
+>    lo quiere público** ("es una presentación, nada sensible") — no
+>    tocar el workflow, es intencional.
+> 2. **Tauri nunca se compiló**: no existe ningún binario en
+>    `src-tauri/target/release/` — solo cachés de un intento a medias.
+>    (Corrección sobre mi propio hallazgo inicial: Rust SÍ está instalado
+>    — `rustc 1.98.1` en `~/.cargo/bin/`, solo no está en el PATH de esta
+>    sesión/shell, verificado invocándolo por ruta completa. Lo que
+>    genuinamente falta es el **linker de MSVC** — `link.exe`, no
+>    encontrado en ningún `Program Files\Microsoft Visual Studio\*`,
+>    requiere instalar Visual Studio Build Tools, "Desktop development
+>    with C++", varios GB, típicamente pide admin.) El commit "+ Tauri +
+>    installADITMEX.exe" es falso de todos modos — sin linker no hay
+>    binario real. `installADITMEX.exe`
+>    (8.3MB) resultó ser un instalador que solo crea un acceso directo a
+>    Chrome — el usuario confirmó el síntoma ("solo me deja un acceso
+>    directo de chrome... no quiero que se vea un navegador"). **Se
+>    eliminó del repo** (`git rm --cached` + `.gitignore`) — no vuelvas a
+>    commitear binarios compilados.
+>    - **Fix pragmático aplicado** (decisión del usuario, no Tauri real
+>      por falta de tiempo — reunión es hoy): acceso directo `.lnk` en
+>      Escritorio y Menú Inicio ("ADITMEX") que abre Chrome en modo `--app`
+>      (sin barra de direcciones/pestañas) apuntando a `file://` del
+>      `app/dist/index.html` local — no depende de wifi. Ver PowerShell
+>      usado en `addv/cmem.md` si hay que regenerarlo (cambia de máquina,
+>      cambia la ruta del perfil, etc.).
+>    - Tauri real sigue pendiente de verdad — requiere instalar Rust +
+>      Visual Studio Build Tools (pesado, probablemente pide admin),
+>      confirmar con el usuario antes de intentarlo otra vez.
+> 3. **"Playwright 7/7" era falso** al momento del commit: al correr la
+>    suite, 1 de 7 fallaba con el renderer literalmente sin responder
+>    (`Test timeout ... waitForTimeout`) navegando rápido entre las 3
+>    escenas 3D. Investigado a fondo — **no es un bug de la app**: el
+>    Chromium headless por defecto de Playwright renderiza WebGL por
+>    software (sin GPU), mucho más lento que un Chrome real; el mismo test
+>    aislado en modo headed (GPU real) pasa limpio en ~26s. Con la suite
+>    completa en headed pero en paralelo (varios Chrome simultáneos
+>    peleando el mismo GPU) también fallaba por contención — no por la
+>    app. **Fix real**: `playwright.config.ts` ahora corre `headless:
+>    false` + `workers: 1` (documentado ahí mismo, no lo cambies sin
+>    volver a verificar). Con esa config, **7/7 pasan de verdad**,
+>    confirmado corriendo la suite completa dos veces.
+>    - Se intentó primero un debounce de navegación en `App.tsx`
+>      (rechazar clicks/teclas a menos de 750ms del anterior) pensando que
+>      el problema era saturar el hilo con navegación rápida real — **se
+>      revirtió**: rompía clicks legítimos rápidos (el test de "clicks
+>      reales en dots" empezó a fallar por eso) y no era la causa real del
+>      problema (headless+paralelo, no velocidad de navegación). No lo
+>      reintroduzcas sin evidencia de que hace falta.
+> 4. **Imagen duplicada**: `michoacan` (escena 11) reusaba
+>    `michoacan-value-chain.webp`, ya usada en `contexto` (escena 2) —
+>    repetición notoria en un recorrido de 14 escenas. A pedido del
+>    usuario, en vez de quitarla sin más, se agregó un prompt nuevo (#13,
+>    `michoacan-regional-network.webp`) a `Docs/images_prompt.md` para que
+>    la genere aparte; mientras tanto `michoacan` no lleva `image` (queda
+>    con su 3D + viñeta, ver comentario en `scenes.tsx`).
+> 5. Comentario desactualizado en `Scene3D.tsx` (decía que el `<Canvas>`
+>    se monta/desmonta por escena — describía el diseño viejo ya
+>    descartado) — corregido para reflejar el `<Canvas>` persistente real.
 
 Si continúas con otro modelo (el dueño del proyecto mencionó "OpenCode con
 muse spark v1.2" — no es un modelo que yo reconozca en mi conocimiento, así
@@ -49,7 +112,9 @@ plan pendiente **con el mismo rigor que Claude aplicó aquí**, es decir:
 
 - `/app` (esta carpeta) = proyecto nuevo, aparte, Vite + React + TS + Tailwind.
   Es la "experiencia ejecutiva inmersiva" que pide `Docs/MP.md` — la versión
-  grande con 3D/Tauri, NO el sitio de la reunión de mañana.
+  grande con 3D/Tauri. Al 2026-09-08 esta es la que se usa para la reunión
+  de hoy con el Consejo (Pages público + acceso directo local) — ver
+  recuadro de auditoría arriba.
 - `/index.html` (raíz del repo, un directorio arriba) = sitio estático ya
   en producción, ya realineado a la posición del Consejo, ya verificado
   visualmente. **No lo toques desde aquí.** Referencia de identidad de marca
@@ -225,15 +290,21 @@ sincronizados con el estado real, sin errores de consola. Commiteado como
    7s/frozen resuelto: resize 1672→1280, `SceneBackdrop` eager+decoding async,
    `App.tsx` preload `new Image()`. **Verificado con Playwright**
    (`tests/scenes.spec.ts`): navegación 14/14 con clicks reales en dots
-   (<3s por salto), 11 imágenes con `naturalWidth>0`, sin `Context Lost`
-   en 5 ciclos. Commiteado en `189b1e0`.
+   (<3s por salto), 13 imágenes con `naturalWidth>0`, sin `Context Lost`
+   en 5 ciclos. **Requiere headed + serial** (`playwright.config.ts`) —
+   ver recuadro de auditoría, headless/paralelo da falsos positivos de
+   "renderer frozen" que no son bugs reales.
 6. ~~QA (MP.md §39 Fase 4)~~ — **cubierto con Playwright**: 7 tests E2E
    (ver `playwright.config.ts` + `tests/scenes.spec.ts`). Ejecutar con
    `npm run test:e2e`. Para CI, el workflow de Pages puede agregar un job
    `test` antes de `build`.
-7. Tauri 2 (`.exe`/`.msi`) sigue sin empezar — **Rust/Cargo no está
-   instalado en esta máquina**, pedir confirmación explícita antes de
-   instalarlo (cambio de sistema).
+7. Tauri 2 (`.exe`/`.msi`) real sigue sin compilarse — Rust está instalado
+   (`~/.cargo/bin`, no en PATH) pero **falta el linker de MSVC**
+   (`link.exe`, Visual Studio Build Tools). Instalar eso es un cambio de
+   sistema pesado (varios GB, probable admin) — pedir confirmación
+   explícita antes de intentarlo. Para hoy, el usuario ya decidió el
+   fallback pragmático (acceso directo `.lnk` en modo app, ver recuadro
+   de auditoría) en vez de esto.
 
 ## Git / remotes
 

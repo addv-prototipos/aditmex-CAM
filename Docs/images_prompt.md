@@ -179,6 +179,21 @@ Prompt:
 
 ---
 
+# 13 — RED REGIONAL MICHOACÁN
+Ruta:
+`/public/images/michoacan-regional-network.webp`
+
+Dimensiones:
+`2400 × 1350`
+
+Prompt:
+
+“Premium editorial photograph representing a regional network of allied agroindustrial businesses in Michoacan, Mexico: a small group of diverse Mexican food-business professionals from different companies gathered informally around a table with agricultural samples and ingredient containers, natural collaborative body language, no staged handshake, no one looking directly at camera, warm natural light suggesting proximity and trust rather than a formal meeting, sophisticated but approachable atmosphere, realistic contemporary clothing, shallow depth of field, negative space for typography, no text, no logos, no watermark, photorealistic.”
+
+Nota: escena `michoacan` de `/app` (MP.md §12) — distinta de 02 (`michoacan-value-chain`, ya usada en `contexto`) y 10 (`michoacan-agroindustry`, ya usada en `vision`). Tema: red de aliados regionales, no paisaje ni cadena de valor.
+
+---
+
 # ORDEN DE USO RECOMENDADO
 
 01 Hero → portada  

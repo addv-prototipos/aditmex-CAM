@@ -148,7 +148,13 @@ export const scenes: Scene[] = [
     title:
       'Queremos que las empresas agroalimentarias de Michoacán tengan cerca un aliado para resolver lo que necesitan para crecer.',
     treatment: 'red',
-    image: 'images/michoacan-value-chain.webp',
+    // Sin `image` a propósito: reusaba michoacan-value-chain.webp (ya en
+    // `contexto`) y era una repetición notoria en el recorrido de 14
+    // escenas. Prompt #13 nuevo en Docs/images_prompt.md
+    // ("michoacan-regional-network.webp") para esta escena específica —
+    // en cuanto exista el archivo real (WebP real, no PNG renombrado —
+    // ver AGENTS.md), agrégalo aquí como
+    // image: 'images/michoacan-regional-network.webp'.
   },
   {
     id: 'vision',
