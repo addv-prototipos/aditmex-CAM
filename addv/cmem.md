@@ -98,3 +98,26 @@ Registro comprimido de la conversación del proyecto bajo el protocolo `addv-web
 - `app/AGENTS.md` (para OpenCode) + `app/CLAUDE.md` (apunta a AGENTS.md, sin duplicar): diagnóstico completo, identidad visual, stack y decisiones, qué existe, qué sigue en orden, y el recordatorio explícito del gate de aprobación humana de `MP.md` §0.9 antes de Fase 3 (3D real, imágenes finales, Tauri).
 
 **Pendiente**: escenas 6-14, sistema visual completo por escena, mock 3D (placeholder, no Three.js real todavía), y **detenerse en el gate** antes de construir nada de Fase 3 sin aprobación explícita del usuario.
+
+---
+
+## 2026-09-07 — 14/14 escenas, verificación, commit, y reorganización de remotes
+
+**Pedido**: "continua donde te quedaste" — retomar tras el corte de sesión anterior (9 escenas de `/app` pendientes de mergear y verificar).
+
+**Implementado (`/app`)**: verificado que las 14 escenas ya estaban mergeadas en `scenes.tsx` y que `App.tsx` usa `scenes.length`/`index` de forma dinámica (sin límite hardcodeado que ajustar). `tsc --noEmit` y `npm run build` limpios. Levantado `vite` local y recorridas las 14 escenas en navegador con `get_page_text` (contenido real del DOM, no solo screenshot) — cada escena con copy único, contador `NN/14` y dots sincronizados, sin errores de consola.
+
+**Falsa alarma investigada**: en un screenshot tras 13 `ArrowRight` seguidos, el contador parecía "congelado" en `01/14` mientras el contenido y los dots ya mostraban la escena 14. Se lanzó un agente Explore a leer `App.tsx` completo: confirmó que un único estado `index` alimenta contador y dots en el mismo render, sin animación/debounce diferencial — descartaba bug de lógica. La causa real resultó doble: (1) la pestaña del navegador tenía un bundle cacheado de una versión anterior (se resolvió con hard-reload, `ctrl+shift+r`); (2) por separado, al mandar teclas más rápido que los 700ms de la transición `AnimatePresence mode="wait"`, el contenido visual queda momentáneamente detrás del índice — comportamiento esperado del componente, no bug, irrelevante para uso real (una tecla a la vez).
+
+**Incidente**: para detener el servidor de desarrollo se usó `taskkill /F /IM node.exe`, que mata todos los procesos `node.exe` de la máquina — no solo el de este proyecto. Esto tumbó también la conexión MCP de Ruflo (confirmado por el aviso de "347 deferred tools no longer available" inmediatamente después). Reportado al usuario proactivamente. Pendiente: usar un método más quirúrgico (PID específico) la próxima vez.
+
+**Commit**: `e0c4183 feat: scaffold /app Vite+React+TS prototype with 14-scene narrative (MP.md)` — 31 archivos, incluye todo `/app` + `.gitignore`/`project_state.md`/`cmem.md` de la sesión anterior. Verificado antes de stagear que el `.gitignore` de `/app` excluye `node_modules`/`dist` correctamente (28 archivos untracked, ninguno de build/cache).
+
+**Reorganización de remotes (pedido explícito del usuario tras el push)**: el repo tenía `origin` → `aditmex-CAM.git` y `origin-ventas` → `aditmex-ventas.git` (este último con aviso de GitHub de que el repo se movió a `addv-prototipos/aditmex-ventas`). El commit `e0c4183` se empujó primero por error a `origin-ventas` (rama trackeada por defecto). El usuario pidió cancelar/revertir y aclaró exactamente el criterio: **todo el trabajo de hoy en este directorio debe vivir en `aditmex-CAM.git`**, y **`aditmex-ventas.git` debe quedar intacto** (tal como estaba antes de este push, en `ae7cbf8`). Ejecutado:
+1. `git push origin-ventas ae7cbf8:master --force-with-lease` — revierte `aditmex-ventas.git` a `ae7cbf8`, quitando `e0c4183` de ahí.
+2. `git push origin master` — fast-forward de `aditmex-CAM.git` desde `31f3bb8` hasta `e0c4183` (incorpora también `ae7cbf8`, que ya era parte del trabajo "de hoy" y no estaba antes en ese repo).
+3. `git remote remove origin-ventas` — a pedido explícito, para que no quede riesgo de push accidental futuro a ese repo.
+
+Verificado con `git fetch` a ambos remotes antes de eliminar `origin-ventas`: `aditmex-ventas.git` en `ae7cbf8` (intacto), `aditmex-CAM.git` en `e0c4183` (todo). Único remote local ahora: `origin` → `aditmex-CAM.git`.
+
+**Pendiente**: gate de aprobación humana antes de Fase 3 de `MP.md` (3D real, Tauri) — sin iniciar. Resto de pendientes de `project_state.md` sigue abierto.
