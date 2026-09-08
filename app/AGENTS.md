@@ -211,12 +211,33 @@ sincronizados con el estado real, sin errores de consola. Commiteado como
      prop `active` (`'always'` solo en las 3 escenas, `'demand'` el resto).
    - Verificado: 5 ciclos de navegación real (5→11→8→5→11→8→5→11→…) sin un
      solo "Context Lost" ni error en consola tras el fix.
-5. **Pendiente ahora**: imágenes finales (`Docs/images_prompt.md`) — el
-   usuario las está generando externamente (Midjourney/similar, prompts ya
-   escritos) y avisará cuando estén listas para integrarlas. Tauri 2
-   (`.exe`/`.msi`) sigue sin empezar — **Rust/Cargo no está instalado en
-   esta máquina**, pedir confirmación explícita antes de instalarlo (cambio
-   de sistema). QA (MP.md §39 Fase 4) sin definir todavía.
+5. ~~Imágenes finales~~ (`Docs/images_prompt.md`) — **recibidas y
+   corregidas 2026-09-07**, faltaba integrarlas en código:
+   - 12 narrativas + textura de marca (ID-02) en `app/public/images/`
+     (`brand/` para la textura). El usuario las entregó como PNG
+     renombrado a `.webp` (magic bytes `89 50 4E 47`, no `RIFF...WEBP`) —
+     se convirtieron a WebP real con Pillow (25.5MB → 3.1MB) y se movieron
+     desde `public/images/` (carpeta suelta en la raíz, sin dueño) a
+     `app/public/images/` (la que sirve Vite). Dimensiones reales algo
+     menores al spec pero mismo aspect ratio (ej. `hero-*` 1672×941 vs
+     2400×1350 pedido) — no se hizo upscale, no vale la pena degradar
+     calidad por eso.
+   - Logo (ID-01, `aditmex-logo-refined.svg`): mismo problema de formato
+     **más** un problema de fondo — pedía re-vectorizar
+     `aditmex-logo-white.svg` (no existe en el repo) y ningún generador de
+     imágenes produce vector real de todos modos. Con el usuario: se guardó
+     como placeholder raster honesto en `assets/brand/aditmex-logo-refined.png`
+     (sin extensión `.svg` falsa) hasta que exista un vector real —
+     **no usar este PNG como si fuera el logo final**, avisar si se integra.
+   - **Falta todavía**: conectar estas imágenes en `scenes.tsx`/
+     `SceneBackdrop.tsx` (ahora mismo el sitio sigue usando gradientes/CSS/
+     3D, ninguna escena referencia `app/public/images/*` aún) — próximo
+     paso pendiente de que el usuario confirme cómo quiere integrarlas
+     (¿reemplazan el treatment de fondo? ¿son media adicional por escena?).
+6. Tauri 2 (`.exe`/`.msi`) sigue sin empezar — **Rust/Cargo no está
+   instalado en esta máquina**, pedir confirmación explícita antes de
+   instalarlo (cambio de sistema). QA (MP.md §39 Fase 4) sin definir
+   todavía.
 
 ## Git / remotes
 

@@ -206,3 +206,22 @@ Servidor de desarrollo detenido por PID específico (`Stop-Process -Id`), no por
 **Verificado**: `tsc --noEmit` y `npm run build` limpios en cada iteración (chunk de `Scene3D` separado, ~888KB/236KB gzip, bundle principal sin crecer). En navegador: las 3 escenas renderizan correctamente (capturas confirman clúster de partículas, cadena de 5 nodos, red de 8 nodos/2 hubs), 5 ciclos completos de navegación a ritmo real (clic con ~1s de espera entre cada uno, no `repeat` de teclas) sin un solo error ni "Context Lost" tras el fix. Nota de proceso: las herramientas `get_page_text`/accesibilidad devolvieron contenido textual desactualizado (stale) un par de veces durante la sesión mientras el screenshot y el DOM real ya mostraban el estado correcto — se resolvió confiando en el screenshot como fuente de verdad cuando hay discrepancia.
 
 **Pendiente**: imágenes finales (el usuario avisa cuando las tenga listas), Tauri (bloqueado por falta de Rust — pedir confirmación antes de instalar), QA de MP.md §39 Fase 4 sin definir alcance todavía.
+
+---
+
+## 2026-09-07 — Imágenes finales recibidas: PNG mal renombrado, corregido y reubicado
+
+**Pedido**: "ya están las imágenes en la ruta que dice el prompt, por cierto trátalas porque todas son formato png, pero al renombrar copié el nombre con extensión así que no están en el formato que deberían". El usuario avisó el defecto de entrada, no pidió que lo descubriera desde cero.
+
+**Diagnosticado**: se verificaron magic bytes (no solo extensión) de los 12 archivos en `public/images/*.webp` — los 12 son PNG real (`89 50 4E 47 0D 0A 1A 0A`), no WebP. Además esa carpeta (`public/` en la raíz del repo) es nueva, sin trackear, y no la sirve ningún proyecto: el sitio estático raíz usa `assets/images/`, el proyecto Vite (`/app`) sirve estáticos desde `app/public/` — las rutas de `images_prompt.md` (`/public/images/...`) están escritas pensando en el proyecto Vite, no en la raíz del repo.
+
+Al revisar también los 2 assets de marca (ID-01/ID-02) se encontraron en `assets/brand/` (no exactamente donde dice el spec) con el mismo problema, más uno adicional: `aditmex-logo-refined.svg` también resultó ser PNG (1672×941, sin transparencia) — pero además, `images_prompt.md` pide re-vectorizar `aditmex-logo-white.svg` (el logo real existente) preservando su geometría exacta, y ese archivo fuente **no existe en el repo**. Ningún generador de imágenes (ChatGPT/Midjourney/etc.) produce vectores reales de todos modos — el problema no es solo de formato, es que el deliverable pedido (vector re-trazado de un logo real) no es algo que un generador de imágenes pueda producir. También apareció un archivo suelto sin renombrar (`ChatGPT Image Sep 7, 2026, 09_56_49 PM.png`, 2157×729) sin corresponder a ninguna ruta del spec.
+
+**Decidido con el usuario** (2 preguntas vía `AskUserQuestion`, no se asumió nada): (1) logo → usar el PNG como placeholder honesto (convertido a `.png` real, sin fingir extensión `.svg`), vector real queda pendiente. (2) archivo suelto → borrar, era descarte.
+
+**Implementado**:
+- Las 12 imágenes narrativas + `aditmex-brand-texture.webp` (ID-02) convertidas de PNG a WebP real con Pillow (`Image.open(...).save(..., 'WEBP', quality=90, method=6)`) y movidas a `app/public/images/` (`brand/` para la textura) — verificado con magic bytes (`RIFF....WEBP`) tras la conversión. Tamaño total: 25.5MB → 3.1MB (ganancia de compresión real, no solo cambio de extensión). Carpeta vieja `public/` en la raíz eliminada (estaba untracked, sin dueño, no era pérdida de nada).
+- `aditmex-logo-refined.svg` (en realidad PNG) → guardado como `assets/brand/aditmex-logo-refined.png` (formato real, extensión real). El `.svg` falso se borró. `ChatGPT Image Sep 7...png` borrado a pedido del usuario.
+- Documentado en `app/AGENTS.md` (sección "Qué sigue", ítem 5) y `project_state.md` — incluye advertencia explícita de no tratar el PNG del logo como si fuera el vector final.
+
+**Pendiente**: integrar las imágenes en `scenes.tsx`/`SceneBackdrop.tsx` — todavía ninguna escena referencia `app/public/images/*`, el sitio sigue mostrando solo gradientes/CSS/3D. Falta que el usuario confirme cómo las quiere integrar (¿reemplazan el fondo por escena? ¿van aparte?) antes de tocar código — no asumir. Vector real del logo sigue sin existir.
